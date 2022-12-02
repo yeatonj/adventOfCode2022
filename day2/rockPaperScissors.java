@@ -12,12 +12,34 @@ import java.util.HashMap;
 
 public class rockPaperScissors {
   public static void main(String[] args) {
+    // Create the maps
     Map<String,String> throwMap = makeThrowMap();
     Map<String,Integer> scoreMap = makeScoreMap();
 
+    // Create filepath variable and file variable
+    String filePath = "/Users/yeato/Documents/git_projects/adventOfCode2022/day2/rps_strategy_guide.txt";
+    File stratFile = null;
+    Scanner stratScanner = null;
 
+    // Open the file
+    try {
+      stratFile = new File(filePath);
+      stratScanner = new Scanner(stratFile);
+    } catch (FileNotFoundException e) {
+      System.out.println("File not found...");
+    }
+    // Read the lines of the file, calculating a score for each and adding to
+    // the total
+    int myTotalScore = 0;
+    while (stratScanner.hasNextLine()) {
+      String currentGame = stratScanner.nextLine();
+      String myThrow = throwMap.get(currentGame.substring(0,1));
+      String oppThrow = throwMap.get(currentGame.substring(2));
+      myTotalScore += scoreGame(myThrow, oppThrow, scoreMap);
+    }
+    System.out.println("Total score is: " + myTotalScore);
 
-
+    stratScanner.close();
   }
 
   // Function to return your score for a game given your opponent's throw,
