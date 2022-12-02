@@ -1,6 +1,9 @@
 // Program to find how many calories the elf with the most calories is
 // carrying.  Input file is "elf_calories.txt"
 
+// Written by Joshua Yeaton
+// Written on 12/1/22
+
 import java.util.Scanner;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -34,6 +37,8 @@ public class CalorieCounting {
         tempTotal += Integer.valueOf(output);
       }
     }
+    // Close the scanner
+    calorieScanner.close();
     Collections.sort(calorieList, Collections.reverseOrder());
     System.out.println("Highest calories is: " + calorieList.get(0));
 
