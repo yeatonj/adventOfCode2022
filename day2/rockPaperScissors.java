@@ -10,7 +10,7 @@ import java.io.FileNotFoundException;
 import java.util.Map;
 import java.util.HashMap;
 
-public class rockPaperScissors {
+public class RockPaperScissors {
   public static void main(String[] args) {
     // Create the maps
     Map<String,String> throwMap = makeThrowMap();
