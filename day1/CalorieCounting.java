@@ -39,8 +39,5 @@ public class CalorieCounting {
 
     int topThree = calorieList.get(0) + calorieList.get(1) + calorieList.get(2);
     System.out.println("Top 3 is: " + topThree);
-
-
-
   }
 }
