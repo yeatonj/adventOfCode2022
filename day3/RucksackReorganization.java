@@ -25,17 +25,40 @@ class RucksackReorganization {
       System.out.println("File not found...");
     }
 
-    // Find the repeated value in each rucksack
+    // Part 2: for each group of 3 elves, find the shared item between all of them
+    // and return its score
+
+    // Find the repeated values in each rucksack
     int prioritySum = 0;
+    int elfCount = 0;
+    String elf1 = null;
+    String elf2 = null;
+    String elf3 = null;
+    int badgeScore = 0;
     while (ruckScanner.hasNextLine()) {
       String contents = ruckScanner.nextLine();
       prioritySum += getScore(contents);
+
+      if (elfCount == 0) {
+        elf1 = contents;
+        elfCount++;
+      } else if (elfCount == 1) {
+        elf2 = contents;
+        elfCount++;
+      } else {
+        elf3 = contents;
+        badgeScore += findBadge(elf1, elf2, elf3);
+        elfCount = 0;
+      }
+
     }
 
     System.out.println("Priority sum is: " + prioritySum);
+    System.out.println("Badge sum is: " + badgeScore);
     ruckScanner.close();
   }
 
+  // Function to find the priority of the item shared between each half
   private static int getScore(String lineIn) {
     // Create a set for each half of the rucksack
     Set<Character> firstHalfChars = new HashSet<>();
@@ -62,6 +85,36 @@ class RucksackReorganization {
         // System.out.println("Line is: " + lineIn);
         // System.out.println("Repeated char is: " + char1);
         return findCharValue(char1);
+      }
+    }
+    return 0;
+  }
+
+  // Function to find the single item shared in all bags
+  private static int findBadge(String bagOne, String bagTwo, String bagThree) {
+    // Create a set for each of the first two sacks, and add their items to them
+    Set<Character> firstSack = new HashSet<>();
+    Set<Character> secondSack = new HashSet<>();
+    for (int i = 0; i < bagOne.length(); i++) {
+      if (!firstSack.contains(bagOne.charAt(i))) {
+        firstSack.add(bagOne.charAt(i));
+      }
+    }
+    for (int j = 0; j < bagTwo.length(); j++) {
+      if (!secondSack.contains(bagTwo.charAt(j))) {
+        secondSack.add(bagTwo.charAt(j));
+      }
+    }
+
+    // Iterate through the third sack, and find the shared item, returning its value
+    for (int k = 0; k < bagThree.length(); k++) {
+      if (firstSack.contains(bagThree.charAt(k)) &&
+          secondSack.contains(bagThree.charAt(k))) {
+        // System.out.println("Line 1 is: " + bagOne);
+        // System.out.println("Line 2 is: " + bagTwo);
+        // System.out.println("Line 3 is: " + bagThree);
+        // System.out.println("Repeated char is: " + bagThree.charAt(k));
+        return findCharValue(bagThree.charAt(k));
       }
     }
     return 0;
