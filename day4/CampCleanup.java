@@ -11,6 +11,7 @@ import java.io.FileNotFoundException;
    public static void main(String[] args) {
      // Part 1: figure out how many of the pairs have one elf's sections
      // fully contained by the other
+     // Part 2: figure out how many pairs have any overlap at all
 
      // Open the file and create the scanner
 
@@ -27,6 +28,7 @@ import java.io.FileNotFoundException;
      }
 
      int numContained = 0;
+     int numOverlap = 0;
      while (cleanupScanner.hasNextLine()) {
        String[] elfSections = cleanupScanner.nextLine().split(",");
        String[] elfOneSections = elfSections[0].split("-");
@@ -40,9 +42,13 @@ import java.io.FileNotFoundException;
        if (sectionsContained(elfOneIntSections, elfTwoIntSections)) {
          numContained++;
        }
+       if (anyOverlap(elfOneIntSections, elfTwoIntSections)) {
+         numOverlap++;
+       }
      }
 
      System.out.println("Number of sections contained: " + numContained);
+     System.out.println("Number of overlapping sections: " + numOverlap);
      cleanupScanner.close();
    }
 
@@ -54,6 +60,18 @@ import java.io.FileNotFoundException;
           elfOneSections[1] <= elfTwoSections[1]) ||
           (elfOneSections[0] <= elfTwoSections[0] &&
           elfOneSections[1] >= elfTwoSections[1])) {
+       return true;
+     }
+     return false;
+   }
+
+   // Method to check if there is any overlap at all between their sections
+   private static boolean anyOverlap(int[] elfOneSections,
+                                            int[] elfTwoSections) {
+     if ((elfOneSections[1] >= elfTwoSections[0] &&
+          elfOneSections[1] <= elfTwoSections[1]) ||
+          (elfTwoSections[1] >= elfOneSections[0] &&
+          elfTwoSections[1] <= elfOneSections[1])) {
        return true;
      }
      return false;
