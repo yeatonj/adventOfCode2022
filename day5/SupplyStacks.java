@@ -1,4 +1,6 @@
 // File to determine cargo stacking for supply stacks
+// Initially misread the problem resulting in odd implementation of the stack,
+// but worked out for part 2 as that was my original implementation
 // Written by: Josh Yeaton
 // Written on 12/5/2022
 
@@ -47,6 +49,7 @@ class SupplyStacks {
       }
       System.out.println("Moving " + numToMove + " from " + source + " to " + dest);
       moveCrates(numToMove, source, dest, cargoArray);
+
       // printContents(cargoArray);
 
       numToMove = 0;
@@ -62,12 +65,28 @@ class SupplyStacks {
   }
 
   // Method to pop a certain number of elements from a stack of cargo,
-  // returning those elements (and modifying the original arrayList)
-  private static ArrayList<Character> popEnd(ArrayList<Character> listIn,
+  // returning those elements (and modifying the original arrayList).  This
+  // method does all the crates at once rather than individually
+  private static ArrayList<Character> popEndMult(ArrayList<Character> listIn,
                                             int elsToPop) {
     // Add the popped elements to a new list
     ArrayList<Character> tempList = new ArrayList<>();
     for (int i = listIn.size() - elsToPop; i < listIn.size(); i++) {
+      tempList.add(listIn.get(i));
+    }
+    // Then, remove the elements from the original arrayList
+    listIn.subList(listIn.size() - elsToPop, listIn.size()).clear();
+
+    return tempList;
+  }
+
+  // Method to pop crates off individually (although can ask to do multiple at
+  // a time)
+  private static ArrayList<Character> popEndStack(ArrayList<Character> listIn,
+                                            int elsToPop) {
+    // Add the popped elements to a new list
+    ArrayList<Character> tempList = new ArrayList<>();
+    for (int i = listIn.size() - 1 ;i > listIn.size() - elsToPop - 1; i--) {
       tempList.add(listIn.get(i));
     }
     // Then, remove the elements from the original arrayList
@@ -82,7 +101,8 @@ class SupplyStacks {
                                 int sourceStack,
                                 int destStack,
                                 ArrayList<ArrayList<Character>> stackList) {
-    ArrayList<Character> tempList = popEnd(stackList.get(sourceStack - 1), numCrates);
+    ArrayList<Character> tempList = popEndMult(stackList.get(sourceStack - 1), numCrates);
+    // ArrayList<Character> tempList = popEndStack(stackList.get(sourceStack - 1), numCrates);
     for (int i = 0; i < numCrates; i++) {
       stackList.get(destStack - 1).add(tempList.get(i));
     }
