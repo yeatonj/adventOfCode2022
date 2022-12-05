@@ -15,8 +15,48 @@ class SupplyStacks {
     String instructions = "/Users/yeato/Documents/git_projects/adventOfCode2022/day5/cargo_instructions.txt";
     ArrayList<ArrayList<Character>> cargoArray = createCargoList(startCargo);
 
+    // Open the file
+    File instructionFile = null;
+    Scanner instructionScanner = null;
+    try {
+      instructionFile = new File(instructions);
+      instructionScanner = new Scanner(instructionFile);
+    } catch (FileNotFoundException e) {
+      System.out.println("Can't open instruction file.");
+    }
+
     printContents(cargoArray);
-    moveCrates(3,1,2,cargoArray);
+
+    // Create tracker values for the loop
+    int numToMove = 0;
+    int source = 0;
+    int dest = 0;
+    while (instructionScanner.hasNextLine()) {
+      while(dest == 0) {
+        if (instructionScanner.hasNextInt()) {
+          if (numToMove == 0) {
+            numToMove = instructionScanner.nextInt();
+          } else if (source == 0) {
+            source = instructionScanner.nextInt();
+          } else {
+            dest = instructionScanner.nextInt();
+          }
+        } else {
+          instructionScanner.next();
+        }
+      }
+      System.out.println("Moving " + numToMove + " from " + source + " to " + dest);
+      moveCrates(numToMove, source, dest, cargoArray);
+      // printContents(cargoArray);
+
+      numToMove = 0;
+      source = 0;
+      dest = 0;
+      instructionScanner.nextLine();
+    }
+
+    instructionScanner.close();
+
     printContents(cargoArray);
 
   }
