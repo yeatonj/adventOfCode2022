@@ -14,6 +14,10 @@ import java.util.Collection;
 
 class TuningTrouble {
   public static void main(String[] args) throws IOException {
+    // Change the below value for different lengths of strings you want to match
+    // unique characters for
+    final int stringLength = 14;
+
     // Load the data file
     String filePath = "/Users/yeato/Documents/git_projects/adventOfCode2022/day6/tuning_data.txt";
     FileReader tuningFile = null;
@@ -32,7 +36,8 @@ class TuningTrouble {
     Queue<Character> markerQueue = new LinkedList<>();
     HashMap<Character,Integer> charMap = new HashMap<>();
     Boolean notFound = false;
-    for (int i = 0; i < 4; i++) {
+    // For part 1 or 2, just replace the below
+    for (int i = 0; i < stringLength; i++) {
       int nextCharInt = tuningReader.read();
       Character nextChar = (char) nextCharInt;
       // First, add to the HashMap
@@ -45,7 +50,7 @@ class TuningTrouble {
     }
 
 
-    int currIndex = 4;
+    int currIndex = stringLength;
     // Now, loop through vals until we have no duplicates, adding/removing from
     // queue/map as we go
     int nextCharInt = tuningReader.read(); // reads in to prep the loop
