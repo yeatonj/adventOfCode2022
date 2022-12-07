@@ -9,7 +9,10 @@ class NoSpaceLeft {
     fileTree noSpace = new fileTree();
     noSpace.buildFileTree(filePath);
 
-    System.out.println(noSpace.getRootSize());
+    int maxSize = 100000;
+
+    System.out.println("Size of root: " + noSpace.getRootSize());
+    System.out.println("Sum of all directories under " + maxSize + ": " + noSpace.getSizeUnder(maxSize));
 
   }
 }
