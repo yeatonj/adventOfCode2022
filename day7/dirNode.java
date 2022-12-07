@@ -18,18 +18,24 @@ public class dirNode {
   public dirNode(dirNode parent) {
     this.parentNode = parent;
     this.totalContents = 0;
-    this.childrenNodes = new HashSet<>();
-    this.fileList = new HashMap<>();
+    this.childrenNodes = null;
+    this.fileList = null;
   }
 
-  // Method to add a file to a directory
+  // Method to add a file to a node
   public void addFile(String fileName, int fileSize) {
     this.totalContents += fileSize;
+    if (this.fileList == null) {
+      this.fileList = new HashMap<>();
+    }
     this.fileList.put(fileName, fileSize);
   }
 
-  // Method to add a child directory to the directory
+  // Method to add a child directory to the node
   public void addChildDir(dirNode child) {
+    if (this.childrenNodes == null) {
+      this.childrenNodes = new HashSet<>();
+    }
     this.childrenNodes.add(child);
   }
 
@@ -46,6 +52,11 @@ public class dirNode {
   // Getter method for total directory size
   public int getDirSize() {
     return this.totalContents;
+  }
+
+  // Method for updating total directory size
+  public void updateDirSize(int updateSize) {
+    this.totalContents += updateSize;
   }
 
   // Getter method for parent node
