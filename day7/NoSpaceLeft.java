@@ -4,6 +4,8 @@
 
 class NoSpaceLeft {
   public static void main(String[] args) {
-    System.out.println("Test");
+    String filePath = "/Users/yeato/Documents/git_projects/adventOfCode2022/day7/dir_contents.txt";
+    fileTree noSpace = new fileTree();
+    noSpace.buildFileTree(filePath);
   }
 }

@@ -43,38 +43,39 @@ public class fileTree {
 
     // Loop through the file, creating directories and files and moving through
     // them as necessary
-    while(dirScanner.hasNextLine()) {
-      if (dirScanner.hasNext("$")) {
+    while(dirScanner.hasNext()) {
+      if (dirScanner.hasNext("\\$")) { // \\ is to escape regex...
         // Case running a command
         dirScanner.next(); // Skip "$"
         String command = dirScanner.next();
         if (command.equals("cd")) {
           String newDir = dirScanner.next();
-          newDir = newDir.replace("\n","");
-          // For now, simply print the directory to switch to
-          System.out.println(newDir);
+          if (newDir.equals("/")) {
+            currentNode = root;
+          } else if (newDir.equals("..")) {
+            currentNode = currentNode.getParent();
+          } else {
+            currentNode = currentNode.getChild(newDir);
+          }
         } else {
-          // Case "ls"
-          // For now, simply print that
-          System.out.println(command);
+          // Case "ls", just skip to the next line
+          continue;
         }
 
       } else if (dirScanner.hasNextInt()) {
         // Case adding a file
         int fileSize = dirScanner.nextInt();
         String fileName = dirScanner.next();
-        fileName = fileName.replace("\n","");
-        // For now, just print the filesize and filename
-        System.out.println(fileName + ": " + fileSize);
+        currentNode.addFile(fileName, fileSize);
+        // update the file sizes up the tree
+        updateParentSize(currentNode, fileSize);
 
       } else {
         // Case adding a directory (dir dirname)
         // Add a directory dirname to the current node
         dirScanner.next(); // skip "dir"
         String dirName = dirScanner.next();
-        dirName = dirName.replace("\n","");
-        // For now, just print the directory name
-        System.out.println(dirName);
+        currentNode.addChildDir(dirName);
       }
     }
   }

@@ -11,7 +11,7 @@ public class dirNode {
   // Instance variables:
   private dirNode parentNode; // parent of this node
   private int totalContents; // total contents of this node and all its children
-  private HashSet<dirNode> childrenNodes; // set of children of this node
+  private HashMap<String, dirNode> childrenNodes; // set of children of this node
   private HashMap<String, Integer> fileList; // list of files and sizes
 
   // Constructor
@@ -32,11 +32,11 @@ public class dirNode {
   }
 
   // Method to add a child directory to the node
-  public void addChildDir(dirNode child) {
+  public void addChildDir(String childName) {
     if (this.childrenNodes == null) {
-      this.childrenNodes = new HashSet<>();
+      this.childrenNodes = new HashMap<>();
     }
-    this.childrenNodes.add(child);
+    this.childrenNodes.put(childName, new dirNode(this));
   }
 
   // Getter for files and values
@@ -45,8 +45,13 @@ public class dirNode {
   }
 
   // Getter method for children nodes
-  public HashSet<dirNode> getChildren() {
+  public HashMap<String, dirNode> getChildren() {
     return this.childrenNodes;
+  }
+
+  // Getter method for specific child node
+  public dirNode getChild(String childName) {
+    return this.childrenNodes.getOrDefault(childName,null);
   }
 
   // Getter method for total directory size
