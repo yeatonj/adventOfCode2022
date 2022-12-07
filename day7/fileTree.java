@@ -6,6 +6,7 @@
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
+import java.util.HashMap;
 
 public class fileTree {
   // Instance variables
@@ -15,6 +16,7 @@ public class fileTree {
   // Constructor (with no inputs)
   public fileTree() {
     root = new dirNode(null); // parent of root is null
+    size = 0;
   }
 
   // Method (with dirStructure as string that indicates the path of a file
@@ -76,6 +78,7 @@ public class fileTree {
         dirScanner.next(); // skip "dir"
         String dirName = dirScanner.next();
         currentNode.addChildDir(dirName);
+        size++;
       }
     }
   }
@@ -94,6 +97,36 @@ public class fileTree {
     updateNode.updateDirSize(updateSize);
     this.updateParentSize(updateNode, updateSize);
     return;
+  }
+
+  public int getRootSize() {
+    return root.getDirSize();
+  }
+
+  // Returns the sum of the sizes of all directories in the file structure
+  // with each directory under the size specified in the function input
+  public int getSizeUnder(int maxSize) {
+    return recursiveSizeUnder(maxSize, root);
+  }
+
+  // function checks all children's sizes and adds any under the maxSize to the
+  // total, then returns that total
+  private int recursiveSizeUnder(int maxSize, dirNode currentNode) {
+    int returnVal = 0;
+    // Base case
+    if (currentNode.getChildren() == null) {
+      return 0;
+    } else {
+      HashMap<String,dirNode> children = currentNode.getChildren();
+      for (String key : children.keySet()) {
+        int childSize = children.get(key).getDirSize();
+        if (childSize <= maxSize) {
+          returnVal += childSize;
+        }
+        returnVal += recursiveSizeUnder(maxSize, children.get(key));
+      }
+    }
+    return returnVal;
   }
 
 }
