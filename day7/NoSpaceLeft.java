@@ -9,10 +9,25 @@ class NoSpaceLeft {
     fileTree noSpace = new fileTree();
     noSpace.buildFileTree(filePath);
 
+    // Part 1
     int maxSize = 100000;
 
     System.out.println("Size of root: " + noSpace.getRootSize());
     System.out.println("Sum of all directories under " + maxSize + ": " + noSpace.getSizeUnder(maxSize));
+
+    // Part 2
+    // Find the smallest directory that will free up enough space to allow us
+    // to get enough free space for the update
+
+    int updateSize = 30000000;
+    int totalDiskSpace = 70000000;
+    int currentFreeSpace = totalDiskSpace - noSpace.getRootSize();
+    int neededSpace = updateSize - currentFreeSpace;
+
+    System.out.println("Current free space is: " + currentFreeSpace);
+    System.out.println("Needed space is : "+ neededSpace);
+    int clearedSpace = noSpace.clearSpace(neededSpace);
+    System.out.println("Cleared space is : "+ clearedSpace);
 
   }
 }

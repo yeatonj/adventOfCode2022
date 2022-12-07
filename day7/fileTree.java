@@ -106,7 +106,7 @@ public class fileTree {
   // Returns the sum of the sizes of all directories in the file structure
   // with each directory under the size specified in the function input
   public int getSizeUnder(int maxSize) {
-    return recursiveSizeUnder(maxSize, root);
+    return recursiveSizeUnder(maxSize, this.root);
   }
 
   // function checks all children's sizes and adds any under the maxSize to the
@@ -127,6 +127,36 @@ public class fileTree {
       }
     }
     return returnVal;
+  }
+
+  // Returns the size of the smallest directory in the file structure that is
+  // also larger than spaceNeeded
+  public int clearSpace(int spaceNeeded) {
+    int rootSize = root.getDirSize();
+    return recursiveClearSpace(spaceNeeded, rootSize, this.root);
+  }
+
+  private int recursiveClearSpace(int spaceNeeded, int currMin, dirNode currentNode) {
+    int nodeVal = currentNode.getDirSize();
+    // Base case 1
+    if (nodeVal < spaceNeeded) {
+      return currMin;
+    } else if (nodeVal < currMin){
+      currMin = nodeVal;
+    }
+    HashMap<String,dirNode> children = currentNode.getChildren();
+    // Base case 2
+    if (children == null) {
+      return currMin;
+    } else {
+      for (String key : children.keySet()) {
+        int childVal = recursiveClearSpace(spaceNeeded, currMin, children.get(key));
+        if (childVal > spaceNeeded) {
+          currMin = childVal;
+        }
+      }
+    }
+    return currMin;
   }
 
 }
