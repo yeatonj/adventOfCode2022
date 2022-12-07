@@ -5,11 +5,51 @@
 // Written on 12/7/2022
 
 import java.util.HashSet;
+import java.util.HashMap;
 
 public class dirNode {
   // Instance variables:
   private dirNode parentNode; // parent of this node
   private int totalContents; // total contents of this node and all its children
   private HashSet<dirNode> childrenNodes; // set of children of this node
+  private HashMap<String, Integer> fileList; // list of files and sizes
 
+  // Constructor
+  public dirNode(dirNode parent) {
+    this.parentNode = parent;
+    this.totalContents = 0;
+    this.childrenNodes = new HashSet<>();
+    this.fileList = new HashMap<>();
+  }
+
+  // Method to add a file to a directory
+  public void addFile(String fileName, int fileSize) {
+    this.totalContents += fileSize;
+    this.fileList.put(fileName, fileSize);
+  }
+
+  // Method to add a child directory to the directory
+  public void addChildDir(dirNode child) {
+    this.childrenNodes.add(child);
+  }
+
+  // Getter for files and values
+  public HashMap<String, Integer> getFiles() {
+    return this.fileList;
+  }
+
+  // Getter method for children nodes
+  public HashSet<dirNode> getChildren() {
+    return this.childrenNodes;
+  }
+
+  // Getter method for total directory size
+  public int getDirSize() {
+    return this.totalContents;
+  }
+
+  // Getter method for parent node
+  public dirNode getParent() {
+    return this.parentNode;
+  }
 }
