@@ -1,4 +1,4 @@
-// Program to XXX
+// Program to create and move through a file structure
 // Written by: Josh Yeaton
 // Written on 12/7/2022
 
