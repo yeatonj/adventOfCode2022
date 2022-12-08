@@ -37,16 +37,73 @@ class TreetopTreeHouse {
 
     // Count the visible trees
     int visCount = 0;
+    int maxScore = 0;
     for (int i = 0; i < visibleTrees.size(); i++) {
       for (int j = 0; j < visibleTrees.get(0).size(); j++) {
         if (visibleTrees.get(i).get(j) >= 0) {
           visCount++;
+          // Calculate the viewing score when a visible tree is found
+          int viewScore = viewingScore(forestHeights, i, j);
+          if (viewScore > maxScore) {
+            maxScore = viewScore;
+          }
         }
       }
     }
     System.out.println("Number of visible trees is: " + visCount);
-    System.out.println(visibleTrees.get(5));
+    System.out.println("Max viewing score is: " + maxScore);
+  }
 
+  // Function to calculate the viewing score of a given tree at a given position
+  public static int viewingScore(ArrayList<ArrayList<Integer>> treeHeights, int row, int col) {
+    int treeHeight = treeHeights.get(row).get(col);
+    int upScore, downScore, leftScore, rightScore;
+    upScore = downScore = leftScore = rightScore = 0;
+    int numRows = treeHeights.size();
+    int numCols = treeHeights.get(0).size();
+
+    // Find down score
+    int i = row;
+    while (i < numRows - 1) {
+      downScore++;
+      i++;
+      if (treeHeights.get(i).get(col) >= treeHeight) {
+        break;
+      }
+    }
+
+    // Find up score
+    i = row;
+    while (i > 0) {
+      upScore++;
+      i--;
+      if (treeHeights.get(i).get(col) >= treeHeight) {
+        break;
+      }
+    }
+
+    // Find right score
+    i = col;
+    while (i < numCols - 1) {
+      rightScore++;
+      i++;
+      if (treeHeights.get(row).get(i) >= treeHeight) {
+        break;
+      }
+
+    }
+
+    // Find left score
+    i = col;
+    while (i > 0) {
+      leftScore++;
+      i--;
+      if (treeHeights.get(row).get(i) >= treeHeight) {
+        break;
+      }
+
+    }
+    return downScore * upScore * leftScore * rightScore;
   }
 
   // Function to update the visible array by checking each of the directions
