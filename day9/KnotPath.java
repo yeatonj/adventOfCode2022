@@ -10,51 +10,27 @@ import java.util.HashMap;
 public class KnotPath {
   // Instance variables
   ArrayList<KnotLoc> path = null;
+  int tailLength = 0;
+  ArrayList<KnotPath> tailPaths = null;
 
   // Constructor
-  public KnotPath() {
+  public KnotPath(int tailLength) {
     this.path = new ArrayList<>();
     // Add the origin to the path (all knots start at origin)
     this.path.add(new KnotLoc(0,0));
+    this.tailLength = tailLength;
+    // Initialize the tail paths
+    if (this.tailLength > 0) {
+      tailPaths = new ArrayList<>();
+    }
+    for (int i = 0; i < tailLength; i++) {
+      tailPaths.add(new KnotPath(0));
+    }
   }
 
-  public void genPathFromFile(String filePath) {
-    File knotPathFile = null;
-    Scanner headPathScanner = null;
-    try {
-      knotPathFile = new File(filePath);
-      headPathScanner = new Scanner(knotPathFile);
-    } catch (FileNotFoundException e) {
-      System.out.println("File not found...");
-    }
-
-    // Set starting locations for the path to generate from
-    int currentX = this.path.get(path.size()-1).getX();
-    int currentY = this.path.get(path.size()-1).getY();
-
-    while(headPathScanner.hasNext()) {
-      // Each line of the file is (direction, magnitude)
-      String direction = headPathScanner.next();
-      int magnitude = Integer.parseInt(headPathScanner.next());
-      if (direction.equals("U")) {
-        currentY += magnitude;
-      } else if (direction.equals("D")) {
-        currentY -= magnitude;
-      } else if (direction.equals("R")) {
-        currentX += magnitude;
-      } else if (direction.equals("L")) {
-        currentX -= magnitude;
-      } else {
-        System.out.println("Bad direction, skipping line...");
-      }
-      this.path.add(new KnotLoc(currentX,currentY));
-    }
-    headPathScanner.close();
-  }
-
-  // Function to move the tail from its current last location on the path
+  // Function to move the full tail from its current last location on the path
   // to a new location given the current location of the head
-  public void genPathFromFileWithTail(String filePath, KnotPath tail) {
+  public void genPathFromFileFullTail(String filePath) {
     File knotPathFile = null;
     Scanner headPathScanner = null;
     try {
@@ -84,8 +60,16 @@ public class KnotPath {
         } else {
           System.out.println("Bad direction, skipping line...");
         }
+        // Add this new location to the head path
         this.path.add(new KnotLoc(currentX,currentY));
-        this.moveFollower(tail);
+        // If there are tail elements, move the tail
+        if (this.tailPaths != null) {
+          this.moveFollower(this, this.tailPaths.get(0));
+          // For each tail element, move the tail based on this motion
+          for (int i = 1; i < this.tailLength; i++) {
+            this.moveFollower(this.tailPaths.get(i-1), this.tailPaths.get(i));
+          }
+        }
         magnitude--;
       }
     }
@@ -101,18 +85,25 @@ public class KnotPath {
     this.path.add(new KnotLoc(currentX + moveX, currentY + moveY));
   }
 
+  // Getter for the path for the head of the rope
   public ArrayList<KnotLoc> getPath() {
     return this.path;
   }
 
+  // Getter for the path for the tail of the rope
+  public ArrayList<KnotPath> getTailPaths() {
+    return this.tailPaths;
+  }
+
+  // Getter for the current location of the head of the rope
   public KnotLoc getCurrentLoc() {
     return this.path.get(this.path.size() - 1);
   }
 
-  private void moveFollower(KnotPath tail) {
+  private void moveFollower(KnotPath leader, KnotPath tail) {
     // Get the current location of the tail
     KnotLoc currTailLoc = tail.getCurrentLoc();
-    KnotLoc currHeadLoc = this.getCurrentLoc();
+    KnotLoc currHeadLoc = leader.getCurrentLoc();
 
     // Find the differences in location
     KnotLoc locDiff = currHeadLoc.minus(currTailLoc);
