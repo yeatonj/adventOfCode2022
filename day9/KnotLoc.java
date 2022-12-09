@@ -16,6 +16,12 @@ public class KnotLoc {
     return ((this.xLoc == knot2.getX()) && (this.yLoc == knot2.getY()));
   }
 
+  // Subtraction method
+  // Subtracts knot loc passed in from current instance's location
+  public KnotLoc minus(KnotLoc knot2) {
+    return new KnotLoc(this.xLoc - knot2.getX(), this.yLoc - knot2.getY());
+  }
+
   // Getters
   public int getX() {
     return this.xLoc;
