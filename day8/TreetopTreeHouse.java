@@ -1,4 +1,4 @@
-// Program to XXX
+// Program to determine optimal location for a treehouse in a forest
 // Written by: Josh Yeaton
 // Written on 12/8/2022
 
