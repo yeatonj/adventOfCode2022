@@ -152,4 +152,9 @@ class HeightMap {
   public HashMap<Integer, HeightMapNode> getNodeNumMap() {
     return this.nodeNumMap;
   }
+
+  // Getter for node edges hashMap
+  public HashMap<HeightMapNode, HashMap<String, HeightMapEdge>> getNodeEdges() {
+    return nodeEdges;
+  }
 }
