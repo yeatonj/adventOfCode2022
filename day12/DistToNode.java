@@ -3,7 +3,7 @@
 
 import java.util.Comparator;
 
-class DistToNode implements Comparator<DistToNode> {
+class DistToNode implements Comparable<DistToNode> {
   // Instance Variables
   private int distToDest;
   private HeightMapEdge travelEdge;
@@ -21,8 +21,12 @@ class DistToNode implements Comparator<DistToNode> {
     return this.travelEdge.getDest();
   }
 
+  public int getDist() {
+    return this.distToDest;
+  }
+
   // Comparator
-  public int compare(DistToNode a, DistToNode b) {
-    return a.distToDest - b.distToDest;
+  public int compareTo(DistToNode b) {
+    return this.distToDest - b.distToDest;
   }
 }
