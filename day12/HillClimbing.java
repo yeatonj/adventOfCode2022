@@ -5,7 +5,8 @@ import java.util.HashMap;
 import java.io.FileNotFoundException;
 import java.util.HashSet;
 import java.util.PriorityQueue;
-import java.lang.Math;
+import java.util.ArrayList;
+import java.util.Collections;
 
 class HillClimbing {
   public static void main(String[] args) throws FileNotFoundException {
@@ -32,6 +33,27 @@ class HillClimbing {
     // Calculate distance map with max allowable gap 1
     distanceMap = findShortestPaths(elfMap, elfMap.getOrigin(), 1);
     System.out.println("Shortest path from origin to destination is: " + distanceMap.get(elfMap.getDest()));
+
+    // Now, find the shortest path from any node that starts at elevation 0
+    ArrayList<Integer> shortestPaths = new ArrayList<>();
+
+    // Iterate through nodes, and if it starts at elevation 0, run it through the algorithm then add to the shortest paths
+    int currNode = 1;
+    for (int i = 0; i < elfMap.getMapHeight(); i++) {
+      for (int j = 0; j < elfMap.getMapWidth(); j++) {
+        HeightMapNode startingNode = elfMapNodes.get(currNode);
+        if (startingNode.getNodeHeight() == 0) {
+          int shortestPath = findShortestPaths(elfMap, startingNode, 1).getOrDefault(elfMap.getDest(),-1);
+          if (shortestPath != -1) {
+            shortestPaths.add(shortestPath);
+          }
+        }
+        currNode++;
+      }
+    }
+
+    Collections.sort(shortestPaths);
+    System.out.println("Shortest possible path from any 0 elevation point is: " + shortestPaths.get(0));
 
 
   }
