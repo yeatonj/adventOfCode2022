@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.io.FileNotFoundException;
 import java.util.HashSet;
 import java.util.PriorityQueue;
+import java.lang.Math;
 
 class HillClimbing {
   public static void main(String[] args) throws FileNotFoundException {
@@ -30,18 +31,7 @@ class HillClimbing {
 
     // Calculate distance map with max allowable gap 1
     distanceMap = findShortestPaths(elfMap, elfMap.getOrigin(), 1);
-    System.out.println(distanceMap.get(elfMap.getOrigin()));
-    System.out.println(distanceMap.get(elfMap.getDest()));
-
-    // System.out.println(distanceMap.size());
-    // System.out.println(HeightMapEdge.getNumEdges());
-    // System.out.println(elfMapNodes.size());
-    // System.out.println(elfMap.getMapHeight());
-    // System.out.println(elfMap.getMapWidth());
-    // distanceMap.put(new HeightMapNode(20, 40, 20), 0);
-    // System.out.println(distanceMap.size());
-
-
+    System.out.println("Shortest path from origin to destination is: " + distanceMap.get(elfMap.getDest()));
 
 
   }
@@ -52,8 +42,6 @@ class HillClimbing {
   public static HashMap<HeightMapNode, Integer> findShortestPaths(HeightMap mapIn, HeightMapNode sourceNode, int maxHeightDiff) {
     // This hashmap is the shortest path to each node
     HashMap<HeightMapNode, Integer> visitedNodes = new HashMap<>();
-    // This hashmap allows us to access nodes by their node number
-    HashMap<Integer, HeightMapNode> mapNodeNums = mapIn.getNodeNumMap();
     // This priority queue tracks the current distance to any node in the queue
     PriorityQueue<DistToNode> distQueue = new PriorityQueue<>();
     // Set the origin node to 0
@@ -68,10 +56,6 @@ class HillClimbing {
     HeightMapEdge northEdge = currentNodeEdges.get("North");
     if (northEdge != null) {
       edgeWeight = northEdge.getWeight();
-      // Ensure it is positive
-      if (edgeWeight < 0) {
-        edgeWeight *= -1;
-      }
       if (edgeWeight <= maxHeightDiff) {
         distQueue.add(new DistToNode(1, northEdge));
       }
@@ -79,10 +63,6 @@ class HillClimbing {
     HeightMapEdge eastEdge = currentNodeEdges.get("East");
     if (eastEdge != null) {
       edgeWeight = eastEdge.getWeight();
-      // Ensure it is positive
-      if (edgeWeight < 0) {
-        edgeWeight *= -1;
-      }
       if (edgeWeight <= maxHeightDiff) {
         distQueue.add(new DistToNode(1, eastEdge));
       }
@@ -90,10 +70,6 @@ class HillClimbing {
     HeightMapEdge westEdge = currentNodeEdges.get("West");
     if (westEdge != null) {
       edgeWeight = westEdge.getWeight();
-      // Ensure it is positive
-      if (edgeWeight < 0) {
-        edgeWeight *= -1;
-      }
       if (edgeWeight <= maxHeightDiff) {
         distQueue.add(new DistToNode(1, westEdge));
       }
@@ -101,10 +77,6 @@ class HillClimbing {
     HeightMapEdge southEdge = currentNodeEdges.get("South");
     if (southEdge != null) {
       edgeWeight = southEdge.getWeight();
-      // Ensure it is positive
-      if (edgeWeight < 0) {
-        edgeWeight *= -1;
-      }
       if (edgeWeight <= maxHeightDiff) {
         distQueue.add(new DistToNode(1, southEdge));
       }
@@ -121,16 +93,11 @@ class HillClimbing {
         // System.out.println("Adding a node with distance " + distToNode);
         visitedNodes.put(currDest, distToNode);
 
-
         // Then, add all of its paths, if they meet conditions
         currentNodeEdges = edgeMap.get(currDest);
         northEdge = currentNodeEdges.get("North");
         if (northEdge != null) {
           edgeWeight = northEdge.getWeight();
-          // Ensure it is positive
-          if (edgeWeight < 0) {
-            edgeWeight *= -1;
-          }
           if (edgeWeight <= maxHeightDiff) {
             distQueue.add(new DistToNode(distToNode + 1, northEdge));
           }
@@ -138,10 +105,6 @@ class HillClimbing {
         eastEdge = currentNodeEdges.get("East");
         if (eastEdge != null) {
           edgeWeight = eastEdge.getWeight();
-          // Ensure it is positive
-          if (edgeWeight < 0) {
-            edgeWeight *= -1;
-          }
           if (edgeWeight <= maxHeightDiff) {
             distQueue.add(new DistToNode(distToNode + 1, eastEdge));
           }
@@ -149,10 +112,6 @@ class HillClimbing {
         westEdge = currentNodeEdges.get("West");
         if (westEdge != null) {
           edgeWeight = westEdge.getWeight();
-          // Ensure it is positive
-          if (edgeWeight < 0) {
-            edgeWeight *= -1;
-          }
           if (edgeWeight <= maxHeightDiff) {
             distQueue.add(new DistToNode(distToNode + 1, westEdge));
           }
@@ -160,10 +119,6 @@ class HillClimbing {
         southEdge = currentNodeEdges.get("South");
         if (southEdge != null) {
           edgeWeight = southEdge.getWeight();
-          // Ensure it is positive
-          if (edgeWeight < 0) {
-            edgeWeight *= -1;
-          }
           if (edgeWeight <= maxHeightDiff) {
             distQueue.add(new DistToNode(distToNode + 1, southEdge));
           }

@@ -90,25 +90,25 @@ class HeightMap {
         // If a North node exists, add an edge
         if (i > 0) {
           HeightMapNode northNode = nodeArray.get(i-1).get(j);
-          int heightDiff = currNodeHeight - northNode.getNodeHeight();
+          int heightDiff = northNode.getNodeHeight() - currNodeHeight;
           northEdge = new HeightMapEdge(heightDiff, currNode, northNode);
         }
         // If a East node exists, add an edge
         if (j < this.mapWidth - 1) {
           HeightMapNode eastNode = nodeArray.get(i).get(j+1);
-          int heightDiff = currNodeHeight - eastNode.getNodeHeight();
+          int heightDiff = eastNode.getNodeHeight() - currNodeHeight;
           eastEdge = new HeightMapEdge(heightDiff, currNode, eastNode);
         }
         // If a West node exists, add an edge
         if (j > 0) {
           HeightMapNode westNode = nodeArray.get(i).get(j-1);
-          int heightDiff = currNodeHeight - westNode.getNodeHeight();
+          int heightDiff = westNode.getNodeHeight() - currNodeHeight;
           westEdge = new HeightMapEdge(heightDiff, currNode, westNode);
         }
         // If a South node exists, add an edge
         if (i < this.mapHeight - 1) {
           HeightMapNode southNode = nodeArray.get(i+1).get(j);
-          int heightDiff = currNodeHeight - southNode.getNodeHeight();
+          int heightDiff = southNode.getNodeHeight() - currNodeHeight;
           southEdge = new HeightMapEdge(heightDiff, currNode, southNode);
         }
         // Add each edge to the node's hashmap, then add that hashmap to the

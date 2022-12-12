@@ -1,8 +1,6 @@
 // Class that keeps track of the distance to a node by traveling a particular
 // edge. These are comparable to each other
 
-import java.util.Comparator;
-
 class DistToNode implements Comparable<DistToNode> {
   // Instance Variables
   private int distToDest;
@@ -27,6 +25,8 @@ class DistToNode implements Comparable<DistToNode> {
 
   // Comparator
   public int compareTo(DistToNode b) {
-    return this.distToDest - b.distToDest;
+    // System.out.println("Comparing this: " + this.distToDest + " to: " + b.getDist());
+    // System.out.println("Returning: " + (this.distToDest - b.getDist()));
+    return this.distToDest - b.getDist();
   }
 }
