@@ -36,7 +36,7 @@ class MonkeyMiddleTestData {
     monkeyList.add(monkey3);
 
     // Iterate over the monkeys and perform monkey business
-    int numRounds = 20;
+    int numRounds = 10000;
     for (int i = 0; i < numRounds; i++) {
       System.out.println("Round: " + i);
       System.out.println("Queue at start of round:");

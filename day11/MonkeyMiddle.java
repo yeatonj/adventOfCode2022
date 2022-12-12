@@ -4,6 +4,7 @@
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.math.BigInteger;
 
 class MonkeyMiddle {
   public static void main(String[] args) {
@@ -50,11 +51,11 @@ class MonkeyMiddle {
     monkeyList.add(monkey7);
 
     // Iterate over the monkeys and perform monkey business
-    int numRounds = 20;
+    int numRounds = 10000;
     for (int i = 0; i < numRounds; i++) {
       for (Monkey monkey : monkeyList) {
         monkey.startBusiness();
-        System.out.println("Working...");
+        // System.out.println("Working...");
       }
     }
 
@@ -66,7 +67,10 @@ class MonkeyMiddle {
     System.out.println(inspections);
     Collections.sort(inspections, Collections.reverseOrder());
     System.out.println(inspections);
-    int businessLevel = inspections.get(0) * inspections.get(1);
+    BigInteger firstMonkey = BigInteger.valueOf(inspections.get(0));
+    BigInteger secondMonkey = BigInteger.valueOf(inspections.get(1));
+    BigInteger businessLevel = firstMonkey.multiply(secondMonkey);
+
     System.out.println("Monkey Business level is: " + businessLevel);
     // 87216 is incorrect (too low)
 
