@@ -15,8 +15,8 @@ class DistressSignal {
     // String filePath = "/Users/yeato/Documents/git_projects/adventOfCode2022/day13/distress_data.txt";
     // String filePath = "/Users/yeato/Documents/git_projects/adventOfCode2022/day13/distress_data_test.txt";
     // Windows FilePaths
-    String filePath = "C:\\Users\\yeato\\git_projects\\adventOfCode2022\\day13\\distress_data.txt";
-    // String filePath = "C:\\Users\\yeato\\git_projects\\adventOfCode2022\\day13\\distress_data_test.txt";
+    // String filePath = "C:\\Users\\yeato\\git_projects\\adventOfCode2022\\day13\\distress_data.txt";
+    String filePath = "C:\\Users\\yeato\\git_projects\\adventOfCode2022\\day13\\distress_data_test.txt";
 
     File distressData = new File(filePath);
     Scanner distressScanner = new Scanner(distressData);
@@ -51,7 +51,6 @@ class DistressSignal {
       // Check if they are ordered correctly and print that
       boolean checkPair = checkLineOrder(startList1, startList2);
       System.out.println(checkPair);
-      System.out.println("");
       // If they are, add the sum to the total
       if (checkPair == true) {
         correctLineSum += ((i/2) + 1);
@@ -60,7 +59,6 @@ class DistressSignal {
     System.out.println("Sum of correct indices is: " + correctLineSum);
     // Printed 1414, this is too low - bug was that program wasn't comparing ints correctly
     // Guess 2, 6127, still too low...
-    // Guess 3, 6506, too high...
   }
 
   // Method for converting a string into an arrayList of new strings, split
@@ -119,6 +117,7 @@ class DistressSignal {
     // Now, iterate through each element.  If either is not a single element,
     // We convert both to new ArrayList<String>s and pass them through the
     // function again
+    boolean check = true;
     for (int i = 0; i < minSize; i++) {
       String leftLine = line1.get(i);
       String rightLine = line2.get(i);
@@ -127,15 +126,21 @@ class DistressSignal {
       int subLeftSize = leftLine.length();
       int subRightSize = rightLine.length();
       // Test cases
-      if (leftLine.charAt(0) == '[' && rightLine.charAt(0) == '['){
+      if (leftLine.charAt(0) != '[' && rightLine.charAt(0) != '[') {
+        // Case 1 (base case), both are single elements
+        // Simply compare the two
         System.out.println("Case 1");
-        // Case 1, both are arrays
-        // Create new arrays for each
-        ArrayList<String> newLeft = splitArray(leftLine);
-        ArrayList<String> newRight = splitArray(rightLine);
-        // And then pass through back into this function
-        return checkLineOrder(newLeft, newRight);
-      } else if (rightLine.charAt(0) == '[') {
+        int leftInt = Integer.parseInt(leftLine);
+        int rightInt = Integer.parseInt(rightLine);
+        int comparison = leftInt - rightInt;
+        System.out.println(comparison);
+        if (comparison > 0) {
+          return false;
+        } else if (comparison < 0) {
+          System.out.println("Here");
+          return true;
+        }
+      } else if (rightLine.charAt(0) == '[' && leftLine.charAt(0) != '[') {
         //Case 2, right is an array, left is a single element
         // Create new arrays for each
         System.out.println("Case 2");
@@ -144,7 +149,7 @@ class DistressSignal {
         ArrayList<String> newRight = splitArray(rightLine);
         // And then pass through back into this function
         return checkLineOrder(newLeft, newRight);
-      } else if (leftLine.charAt(0) == '[') {
+      } else if (leftLine.charAt(0) == '[' && rightLine.charAt(0) != '[') {
         System.out.println("Case 3");
         //Case 3, left is an array, right is a single element
         // Create new arrays for each
@@ -153,22 +158,22 @@ class DistressSignal {
         ArrayList<String> newLeft = splitArray(leftLine);
         // And then pass through back into this function
         return checkLineOrder(newLeft, newRight);
-      } else {
-        // Case 4 (base case), both are single elements
-        // Simply compare the two
+      } else if (leftLine.equals(rightLine)) {
         System.out.println("Case 4");
-        int leftInt = Integer.parseInt(leftLine);
-        int rightInt = Integer.parseInt(rightLine);
-        int comparison = leftInt - rightInt;
-        if (comparison > 0) {
-          return false;
-        } else if (comparison < 0) {
-          // System.out.println("Here");
-          return true;
-        }
+        // Case 4, strings are identical
+        return true;
+      } else {
+        System.out.println("Case 5");
+        // Case 5, both are arrays
+        // Create new arrays for each
+        ArrayList<String> newLeft = splitArray(leftLine);
+        ArrayList<String> newRight = splitArray(rightLine);
+        // And then pass through back into this function
+        check = checkLineOrder(newLeft, newRight);
       }
-      // If we get to the bottom without having returned anything, we know
-      // everything is equal and we can just return true;
+      if (check == false) {
+        return false;
+      }
     }
     // If we have reached this point, we know that comparisons have not caused
     // us to send back a false value - all values of the array were equal.
