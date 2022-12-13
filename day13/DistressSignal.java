@@ -50,7 +50,11 @@ class DistressSignal {
     }
     System.out.println("Sum of correct indices is: " + correctLineSum);
     // Correct number is 6420
+
+    // Now, go ahead and sort the lines
   }
+
+
 
   // Method for converting a string into an arrayList of new strings, split
   // based on commas
