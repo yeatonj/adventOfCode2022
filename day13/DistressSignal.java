@@ -27,7 +27,6 @@ class DistressSignal {
       lineCount++;
       if (lineCount % 3 !=0){
         String currentLine = distressScanner.nextLine();
-        currentLine = currentLine.replace(" ", "");
         distressLines.add(currentLine);
       } else {
         // Skips blank lines
@@ -36,8 +35,6 @@ class DistressSignal {
     }
     distressScanner.close();
 
-    System.out.println(distressLines);
-
     // -----------------------------------
     // We now have the data loaded into the array, even lines start the pair
     int correctLineSum = 0;
@@ -45,139 +42,141 @@ class DistressSignal {
       // Create the starting arrays from each line in the pair
       ArrayList<String> startList1 = splitArray(distressLines.get(i));
       ArrayList<String> startList2 = splitArray(distressLines.get(i+1));
-      // Print the starting arrays
-      System.out.println(startList1);
-      System.out.println(startList2);
-      // Check if they are ordered correctly and print that
-      boolean checkPair = checkLineOrder(startList1, startList2);
-      System.out.println(checkPair);
-      System.out.println("");
+      boolean checkPair = compare(startList1, startList2);
       // If they are, add the sum to the total
       if (checkPair == true) {
         correctLineSum += ((i/2) + 1);
       }
     }
     System.out.println("Sum of correct indices is: " + correctLineSum);
-    // Printed 1414, this is too low - bug was that program wasn't comparing ints correctly
-    // Guess 2, 6127, still too low...
-    // Guess 3, 6506, too high...
+    // Correct number is 6420
   }
 
   // Method for converting a string into an arrayList of new strings, split
   // based on commas
   private static ArrayList<String> splitArray(String stringIn) {
-        String newString = stringIn.substring(1,stringIn.length()-1);
-        ArrayList<String> stringArray = new ArrayList<>();
+    if (!stringIn.contains(",") && stringIn.charAt(0) != '[') {
+      ArrayList<String> stringArray = new ArrayList<>();
+      stringArray.add(stringIn);
+      return stringArray;
+    }
+    String newString = stringIn.substring(1,stringIn.length()-1);
+    ArrayList<String> stringArray = new ArrayList<>();
 
-        String addString = "";
-        int i = 0;
-        int openBrackets = 0;
-        int closedBrackets = 0;
-        boolean splitNow = false;
-        while (i < newString.length()) {
-          // Check for special next character
-          if (newString.charAt(i) == '[') {
-            openBrackets++;
-          } else if (newString.charAt(i) == ']') {
-            closedBrackets++;
-          } else if (newString.charAt(i) == ',' && openBrackets == closedBrackets) {
-            splitNow = true;
-          }
-          if (splitNow) {
-            stringArray.add(addString);
-            splitNow = false;
-            addString = "";
-          } else {
-            addString += newString.charAt(i);
-          }
-          i++;
-        }
-        if (!addString.equals("")) {
-          stringArray.add(addString);
-        }
-        return stringArray;
+    String addString = "";
+    int i = 0;
+    int openBrackets = 0;
+    int closedBrackets = 0;
+    boolean splitNow = false;
+    while (i < newString.length()) {
+      // Check for special next character
+      if (newString.charAt(i) == '[') {
+        openBrackets++;
+      } else if (newString.charAt(i) == ']') {
+        closedBrackets++;
+      } else if (newString.charAt(i) == ',' && openBrackets == closedBrackets) {
+        splitNow = true;
+      }
+      if (splitNow) {
+        stringArray.add(addString);
+        splitNow = false;
+        addString = "";
+      } else {
+        addString += newString.charAt(i);
+      }
+      i++;
+    }
+    if (!addString.equals("")) {
+      stringArray.add(addString);
+    }
+    return stringArray;
   }
 
-  private static boolean checkLineOrder(ArrayList<String> line1, ArrayList<String> line2) {
-    // Empty case checks
+  // Custom compare function to compare the two inputs
+  // Returns true if order is correct, false if order incorrect, and null if the
+  // two are equal
+  private static Boolean compare(ArrayList<String> line1, ArrayList<String> line2) {
+    // Check for empty lists... -> not 100% sure on this part
     if (line1.isEmpty() && line2.isEmpty()) {
-      return true;
+      return null;
     } else if (line1.isEmpty()) {
       return true;
     } else if (line2.isEmpty()) {
       return false;
     }
-
-    // Find which is smaller, and use that as the index
-    int leftSize = line1.size();
-    int rightSize = line2.size();
-    int minSize = leftSize;
-    if (rightSize < minSize) {
-      minSize = rightSize;
-    }
-
-    // Now, iterate through each element.  If either is not a single element,
-    // We convert both to new ArrayList<String>s and pass them through the
-    // function again
-    for (int i = 0; i < minSize; i++) {
-      String leftLine = line1.get(i);
-      String rightLine = line2.get(i);
-      System.out.println("Comparing left line: " + leftLine);
-      System.out.println("to right line: " + rightLine);
-      int subLeftSize = leftLine.length();
-      int subRightSize = rightLine.length();
-      // Test cases
-      if (leftLine.charAt(0) == '[' && rightLine.charAt(0) == '['){
-        System.out.println("Case 1");
-        // Case 1, both are arrays
-        // Create new arrays for each
-        ArrayList<String> newLeft = splitArray(leftLine);
-        ArrayList<String> newRight = splitArray(rightLine);
-        // And then pass through back into this function
-        return checkLineOrder(newLeft, newRight);
-      } else if (rightLine.charAt(0) == '[') {
-        //Case 2, right is an array, left is a single element
-        // Create new arrays for each
-        System.out.println("Case 2");
-        ArrayList<String> newLeft = new ArrayList<>();
-        newLeft.add(leftLine);
-        ArrayList<String> newRight = splitArray(rightLine);
-        // And then pass through back into this function
-        return checkLineOrder(newLeft, newRight);
-      } else if (leftLine.charAt(0) == '[') {
-        System.out.println("Case 3");
-        //Case 3, left is an array, right is a single element
-        // Create new arrays for each
-        ArrayList<String> newRight = new ArrayList<>();
-        newRight.add(rightLine);
-        ArrayList<String> newLeft = splitArray(leftLine);
-        // And then pass through back into this function
-        return checkLineOrder(newLeft, newRight);
+    boolean line1Int = intCheck(line1);
+    boolean line2Int = intCheck(line2);
+    // Case 1: both elements are integers
+    if (line1Int && line2Int) {
+      // Convert both to integers and compare
+      int int1 = Integer.parseInt(line1.get(0));
+      int int2 = Integer.parseInt(line2.get(0));
+      if (int1 < int2) {
+        return true;
+      } else if (int1 > int2) {
+        return false;
       } else {
-        // Case 4 (base case), both are single elements
-        // Simply compare the two
-        System.out.println("Case 4");
-        int leftInt = Integer.parseInt(leftLine);
-        int rightInt = Integer.parseInt(rightLine);
-        int comparison = leftInt - rightInt;
-        if (comparison > 0) {
-          return false;
-        } else if (comparison < 0) {
-          // System.out.println("Here");
-          return true;
+        return null;
+      }
+    }
+    // Case 2: Left element is a list, right is an integer
+    else if (line2Int) {
+      // Convert the int into an array before passing it in
+      String oldLine2 = line2.get(0);
+      String newLine2 = "[";
+      newLine2 += (oldLine2 + "]");
+      ArrayList<String> newArray2 = new ArrayList<String>();
+      newArray2.add(newLine2);
+      return compare(line1, newArray2);
+    }
+    // Case 3: Left element is an integer, right element is a list
+    else if (line1Int) {
+      // Convert the int into an array before passing it in
+      String oldLine1 = line1.get(0);
+      String newLine1 = "[";
+      newLine1 += (oldLine1 + "]");
+      ArrayList<String> newArray1 = new ArrayList<String>();
+      newArray1.add(newLine1);
+      return compare(newArray1, line2);
+    }
+    // Case 4: Both elements are lists
+    else {
+      // Find which is smaller, and use that as the index
+      int leftSize = line1.size();
+      int rightSize = line2.size();
+      int minSize = leftSize;
+      if (rightSize < minSize) {
+        minSize = rightSize;
+      }
+      // Iterate through the list
+      for (int i = 0; i < minSize; i++) {
+        // Get the contents of each array
+        ArrayList<String> line1Array = splitArray(line1.get(i));
+        ArrayList<String> line2Array = splitArray(line2.get(i));
+        // Then compare
+        Boolean result = compare(line1Array, line2Array);
+        // If we have a result, return it
+        if (result != null) {
+          return result;
         }
       }
-      // If we get to the bottom without having returned anything, we know
-      // everything is equal and we can just return true;
-    }
-    // If we have reached this point, we know that comparisons have not caused
-    // us to send back a false value - all values of the array were equal.
-    // However, if the right side was shorter than the left, this is a failure,
-    // so check this last condition
-    if (rightSize >= leftSize) {
-      return true;
-    } else {
-      return false;
+      if (leftSize < rightSize) {
+        return true;
+      } else if (leftSize > rightSize) {
+        return false;
+      } else {
+        return null;
+      }
     }
   }
+
+  // Function to check if a line is actually an integer
+  private static boolean intCheck(ArrayList<String> lineIn) {
+    int lineSize = lineIn.size();
+    boolean singleEntry = lineSize == 1;
+    boolean multEntries = lineIn.get(0).contains(",");
+    boolean isArray = lineIn.get(0).charAt(0) == '[';
+    return singleEntry && !multEntries && !isArray;
+  }
+
 }
