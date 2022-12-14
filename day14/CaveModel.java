@@ -14,9 +14,9 @@ class CaveModel {
   private int sandSource;
 
   // Constructor
-  public CaveModel(int maxDepth, int minWidthCoord, int maxWidthCoord, int sandSource) {
+  public CaveModel(int maxDepth, int minWidthCoord, int maxWidthCoord, int sandSource, int floorDepth, char floorChar) {
     // Note, the depth is 0 indexed, so we need an array of size 1 bigger
-    this.caveDepth = maxDepth + 1;
+    this.caveDepth = maxDepth + 1 + floorDepth;
     // Make the width larger by 2 to allow us to flow sand off the sides
     this.caveWidth = maxWidthCoord - minWidthCoord + 3;
     // The width offset is subtracting the minimum value and adding 1 (to account for extra width)
@@ -25,6 +25,11 @@ class CaveModel {
 
     // Now, create the caveContents array
     caveContents = new CaveContent[this.caveWidth][this.caveDepth];
+
+    // And, create the floor
+    for (int i = 0; i < this.caveWidth; i++) {
+      caveContents[i][this.caveDepth - 1] = new Rock(floorChar);
+    }
   }
 
   // Getters
@@ -119,8 +124,8 @@ class CaveModel {
   private boolean moveSand(int currentX, int currentY) {
     boolean canMove = true;
     do {
-      // Check to see if we are already past the bottom of the rock (last row)
-      if (currentY + 1 >= this.caveDepth) {
+      // Check to see if we are too close to the cave edges
+      if (currentX == 0 || currentX == this.caveWidth - 1) {
         return false;
       }
       // Now, move the sand

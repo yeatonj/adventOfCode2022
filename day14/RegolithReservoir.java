@@ -56,13 +56,11 @@ class RegolithReservoir {
       rockLineCoords.add(lineCoords);
     }
     dataScanner.close();
-    System.out.println(yMin);
-    System.out.println(yMax);
-    System.out.println(xMin);
-    System.out.println(xMax);
 
-    // Create cave model here!
-    CaveModel elfCave = new CaveModel(yMax, xMin, xMax, 500);
+    // Create cave model here! Note that if the width offset is 0, it'll give
+    // the correct answer for part 1.
+    int widthOffset = 170;
+    CaveModel elfCave = new CaveModel(yMax, xMin-widthOffset, xMax+widthOffset, 500, 2, '#');
     System.out.println("Empty Cave:");
     elfCave.printCaveMap();
 
@@ -87,7 +85,7 @@ class RegolithReservoir {
       sandAdded++;
     }
     elfCave.printCaveMap();
-    System.out.println("Sand added before falling off rock: " + (sandAdded - 1));
+    System.out.println("Sand added before finishing: " + (sandAdded - 1));
 
   }
 }
