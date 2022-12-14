@@ -41,9 +41,48 @@ class CaveModel {
   // Other methods
 
   // Method to add rocks
-  public void addRocks(ArrayList<int[]> coord1, ArrayList<int[]> coord2) {
-    
+  // Each should be coordinates (x,y)
+  public void addRocks(int[] coord1, int[] coord2, char rockChar) {
+    // Adding on const x
+    int x1 = coord1[0];
+    int x2 = coord2[0];
+    int y1 = coord1[1];
+    int y2 = coord2[1];
+    if (x1 == x2) {
+      int diff = y2 - y1;
+      if (diff < 0) {
+        for (int i = y2; i >= y1; i--) {
+          rockHelper(x1, i, rockChar);
+        }
+      } else {
+        for (int i = y1; i <= y2; i++) {
+          rockHelper(x1, i, rockChar);
+        }
+      }
+    } else {
+      int diff = x2 - x1;
+      if (diff < 0) {
+        for (int i = x2; i >= x1; i--) {
+          rockHelper(i, y1, rockChar);
+        }
+      } else {
+        for (int i = x1; i <= x2; i++) {
+          rockHelper(i, y1, rockChar);
+        }
+      }
+    }
   }
+
+  // Helper method to add a rock
+  private boolean rockHelper(int xAdd, int yAdd, char rockChar) {
+    int xTransform = this.widthOffset + xAdd;
+    if (this.caveContents[xTransform][yAdd] == null) {
+      this.caveContents[xTransform][yAdd] = new Rock(rockChar);
+      return true;
+    }
+    return false;
+  }
+
 
   // Method to draw the cave
   public void printCaveMap() {

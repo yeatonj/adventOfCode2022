@@ -11,7 +11,7 @@ class Rock extends CaveContent {
 
   // Methods
   // Constructor
-  public void Rock(char rockChar) {
+  public Rock(char rockChar) {
     this.rockChar = rockChar;
     Rock.numRocks++;
   }

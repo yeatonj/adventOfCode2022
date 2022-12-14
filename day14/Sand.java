@@ -11,7 +11,7 @@ class Sand extends CaveContent {
 
   // Methods
   // Constructor
-  public void Sand(char sandChar) {
+  public Sand(char sandChar) {
     this.sandChar = sandChar;
     Sand.numSand++;
   }
