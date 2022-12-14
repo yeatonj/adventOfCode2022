@@ -63,8 +63,22 @@ class RegolithReservoir {
 
     // Create cave model here!
     CaveModel elfCave = new CaveModel(yMax, xMin, xMax);
+    System.out.println("Empty Cave:");
     elfCave.printCaveMap();
 
+    // Now, add the rocks
+    // ArrayList<ArrayList<int[]>> rockLineCoords = new ArrayList<>();
+    // For each list of coordinates in the rock array
+    for (ArrayList<int[]> coordList : rockLineCoords) {
+      // For each coordinate pair
+      System.out.println(coordList);
+      for (int i = 0; i < coordList.size() - 1; i++) {
+        elfCave.addRocks(coordList.get(i), coordList.get(i+1), '#');
+      }
+    }
+
+    System.out.println("Cave with Rocks:");
+    elfCave.printCaveMap();
 
   }
 }
