@@ -11,8 +11,8 @@ import java.util.ArrayList;
 class RegolithReservoir {
   public static void main(String[] args) throws FileNotFoundException {
     // Read in the data, keeping track of the minimum and maximum x and y values
-    // String filePath = "/Users/yeato/Documents/git_projects/adventOfCode2022/day14/rock_data.txt";
-    String filePath = "/Users/yeato/Documents/git_projects/adventOfCode2022/day14/rock_data_test.txt";
+    String filePath = "/Users/yeato/Documents/git_projects/adventOfCode2022/day14/rock_data.txt";
+    // String filePath = "/Users/yeato/Documents/git_projects/adventOfCode2022/day14/rock_data_test.txt";
     File data = new File(filePath);
     Scanner dataScanner = new Scanner(data);
 
@@ -62,7 +62,7 @@ class RegolithReservoir {
     System.out.println(xMax);
 
     // Create cave model here!
-    CaveModel elfCave = new CaveModel(yMax, xMin, xMax);
+    CaveModel elfCave = new CaveModel(yMax, xMin, xMax, 500);
     System.out.println("Empty Cave:");
     elfCave.printCaveMap();
 
@@ -71,7 +71,6 @@ class RegolithReservoir {
     // For each list of coordinates in the rock array
     for (ArrayList<int[]> coordList : rockLineCoords) {
       // For each coordinate pair
-      System.out.println(coordList);
       for (int i = 0; i < coordList.size() - 1; i++) {
         elfCave.addRocks(coordList.get(i), coordList.get(i+1), '#');
       }
@@ -79,6 +78,16 @@ class RegolithReservoir {
 
     System.out.println("Cave with Rocks:");
     elfCave.printCaveMap();
+
+    System.out.println("Adding Sand!");
+    int sandAdded = 0;
+    boolean onMap = true;
+    while (onMap) {
+      onMap = elfCave.dropSand('o');
+      sandAdded++;
+    }
+    elfCave.printCaveMap();
+    System.out.println("Sand added before falling off rock: " + (sandAdded - 1));
 
   }
 }
