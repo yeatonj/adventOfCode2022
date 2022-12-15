@@ -6,6 +6,7 @@
 import java.awt.Point;
 import java.lang.Math;
 import java.util.ArrayList;
+import java.util.HashSet;
 
 class Sensor {
   // Instance variables
@@ -41,12 +42,19 @@ class Sensor {
   }
 
   // Returns the points in a row that this sensor covers
-  public ArrayList<Point> findPointsInRow(int row) {
-    int rowDist = Math.abs(row - (int) this.sensorLoc.getY());
+  public HashSet<Point> findPointsInRow(int row) {
+    int rowDist = Math.abs(row - (int) this.sensorLoc.getY()); // This is correctly calculated
     // Total number of points in the row
-    int numPoints = 2 * (beaconDistance - rowDist) + 1;
+    // Check this closely for errors!
+    int numPoints = 0;
+    if (this.beaconDistance - rowDist >= 0) {
+      numPoints = 2 * (this.beaconDistance - rowDist) + 1;
+    }
+    if (numPoints == 0) {
+      return null;
+    }
     // Initialize the arrayList
-    ArrayList<Point> pointList = new ArrayList<>();
+    HashSet<Point> pointList = new HashSet<>();
     for (int i = (-1*numPoints)/2; i <= numPoints/2; i++) {
       // Add the points to the arraylist and return them
       Point tempPoint = new Point(((int) this.sensorLoc.getX()) + i, row);
@@ -55,17 +63,27 @@ class Sensor {
     return pointList;
   }
 
-  // Returns the points in a column that this sensor covers
-  public ArrayList<Point> findPointsInCol(int col) {
-    int colDist = Math.abs(col - (int) this.sensorLoc.getX());
+  // Returns the points in a row that this sensor covers
+  public HashSet<Point> findPointsInRow(int row, int minX, int maxX) {
+    int rowDist = Math.abs(row - (int) this.sensorLoc.getY()); // This is correctly calculated
     // Total number of points in the row
-    int numPoints = 2 * (beaconDistance - colDist) + 1;
+    // Check this closely for errors!
+    int numPoints = 0;
+    if (this.beaconDistance - rowDist >= 0) {
+      numPoints = 2 * (this.beaconDistance - rowDist) + 1;
+    }
+    if (numPoints == 0) {
+      return null;
+    }
     // Initialize the arrayList
-    ArrayList<Point> pointList = new ArrayList<>();
+    HashSet<Point> pointList = new HashSet<>();
     for (int i = (-1*numPoints)/2; i <= numPoints/2; i++) {
       // Add the points to the arraylist and return them
-      Point tempPoint = new Point(col, ((int) this.sensorLoc.getY()) + i);
-      pointList.add(tempPoint);
+      int xLoc = ((int) this.sensorLoc.getX()) + i;
+      if (xLoc <= maxX && xLoc >= minX) {
+        Point tempPoint = new Point(xLoc, row);
+        pointList.add(tempPoint);
+      }
     }
     return pointList;
   }
