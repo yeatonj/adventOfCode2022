@@ -61,6 +61,23 @@ public class ProboscideaVolcanium {
     // Print the graph to ensure it's set up correctly
     System.out.println(elephantVolcano);
 
-    // Do the rest of the math here
+    // Find the max flow rate in 30 mins
+    String startValve = "AA";
+    int timeLim = 30;
+    int result = findMaxFlow(startValve, timeLim, elephantVolcano);
+
+    System.out.println(result);
+
+
+  }
+
+
+  // Method to find the maximum flow rate given a starting valve and time limit
+  public static int findMaxFlow(String startingValve, int timeLimit, VolcanoGraph graph) {
+    if (!graph.getValves().containsKey(startingValve)) {
+      System.out.println("Valve not in Volcano, stopping analysis.");
+      return -1;
+    }
+    return 0;
   }
 }

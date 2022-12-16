@@ -51,4 +51,10 @@ public class ValveNode {
     this.isOpen = true;
     return this.isOpen;
   }
+
+  // Method to close the valve
+  public boolean closeValve() {
+    this.isOpen = false;
+    return this.isOpen;
+  }
 }

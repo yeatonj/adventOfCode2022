@@ -8,15 +8,17 @@ import java.util.ArrayList;
 
 public class VolcanoGraph {
   // Instance Variables
-  HashMap<String, ValveNode> valveNameMap; // Access valves through their name
-  HashMap<String, ArrayList<TunnelEdge>> tunnelMap; // access lists of edges from a node name
-  int currentFlowRate; // Will be adjusted up when a valve is opened
+  private HashMap<String, ValveNode> valveNameMap; // Access valves through their name
+  private HashMap<String, ArrayList<TunnelEdge>> tunnelMap; // access lists of edges from a node name
+  private int currentFlowRate; // Will be adjusted up when a valve is opened
+  private HashMap<String, Boolean> valvesOpen; // Each valve is mapped to whether it is open (true) or closed (false)
 
 
   // Constructor
   public VolcanoGraph() {
     this.valveNameMap = new HashMap<>();
     this.tunnelMap = new HashMap<>();
+    this.valvesOpen = new HashMap<>();
     this.currentFlowRate = 0;
   }
 
@@ -28,6 +30,28 @@ public class VolcanoGraph {
 
   public HashMap<String, ArrayList<TunnelEdge>> getTunnels() {
     return this.tunnelMap;
+  }
+
+  public HashMap<String, Boolean> getValvesOpen() {
+    return this.valvesOpen;
+  }
+
+  public int getCurrentFlowRate() {
+    return this.currentFlowRate;
+  }
+
+  // Method to open a valve
+  public void openValve(String valveName) {
+    ValveNode currentValve = valveNameMap.get(valveName);
+    boolean status = currentValve.openValve();
+    valvesOpen.put(valveName, status);
+  }
+
+  // Method to close a valve
+  public void closeValve(String valveName) {
+    ValveNode currentValve = valveNameMap.get(valveName);
+    boolean status = currentValve.closeValve();
+    valvesOpen.put(valveName, status);
   }
 
 
@@ -44,6 +68,9 @@ public class VolcanoGraph {
 
     // And add the node to the list of possible origins for tunnels
     this.tunnelMap.put(valveName, new ArrayList<TunnelEdge>());
+
+    // And add the valve to the valve map (based on its name) as closed (false)
+    this.valvesOpen.put(valveName, false);
   }
 
   // Method to add a tunnel based on an origin, destination, and length
@@ -78,5 +105,5 @@ public class VolcanoGraph {
       returnString += "\n";
     }
     return returnString;
-}
+  }
 }
