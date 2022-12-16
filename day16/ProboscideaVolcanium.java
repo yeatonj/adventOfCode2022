@@ -9,6 +9,7 @@ import java.util.Scanner;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.HashMap;
 
 public class ProboscideaVolcanium {
   public static void main(String[] args) throws FileNotFoundException {
@@ -78,6 +79,86 @@ public class ProboscideaVolcanium {
       System.out.println("Valve not in Volcano, stopping analysis.");
       return -1;
     }
-    return 0;
+
+    // Holds possible valve configurations for the graph (ie, which valves are)
+    HashMap<String, Boolean> valveConfigs = new HashMap<>();
+    // Maps a given configuration to a maximum flow
+    HashMap<HashMap<String, Boolean>, Integer> configFlow = new HashMap<>();
+    // Maps a given time left to a configuration which maps to a max flow
+    HashMap<Integer, HashMap<HashMap<String, Boolean>, Integer>> timeLeftFlow = new HashMap<>();
+    // Maps a valve to a map of amounts of time left to a map of valve configs which are mapped to a max flow
+    // Fundamentally, you give the outer map your position and it returns possible times left.
+    // You then give that map your current time left, and it returns possible valve configs
+    // You then give it your current config, and it gives you the max flow based on all these
+    // We will be checking this map at the top of the iteration to see if the value exists,
+    // and if it does, simply returning that.  If it doesn't, we'll add it at the end of the loop
+    HashMap<String, HashMap<Integer, HashMap<HashMap<String, Boolean>, Integer>>> valveMaxFlows = new HashMap<>();
+
+    // Call the recursive function
+    return recursiveMaxFlow(startingValve, timeLimit, graph, valveMaxFlows);
+  }
+
+  private static int recursiveMaxFlow(
+  String currentValve,
+  int remainingTime,
+  VolcanoGraph graph,
+  HashMap<String, HashMap<Integer, HashMap<HashMap<String, Boolean>, Integer>>> resultMap) {
+    // First, the base case - if time is out, we can't have any flow
+    if (remainingTime == 0) {
+      return 0;
+    }
+    // Second, check to see if we already have a maximum assigned for this config
+    HashMap<String,Boolean> currentValveStatus = graph.getValvesOpen();
+    if(
+    resultMap != null &&
+    resultMap.containsKey(currentValve) &&
+    resultMap.get(currentValve) != null &&
+    resultMap.get(currentValve).containsKey(remainingTime) &&
+    resultMap.get(currentValve).get(remainingTime) != null &&
+    resultMap.get(currentValve).get(remainingTime).containsKey(currentValveStatus)
+    ) {
+      return resultMap.get(currentValve).get(remainingTime).get(currentValveStatus);
+    }
+    // Otherwise, proceed to recursive calls
+    // Option 1: sit at this node (can maybe delete this one?)
+    int maxFlow = recursiveMaxFlow(currentValve, remainingTime - 1, graph, resultMap);
+
+    // Option 2: If the valve we are at is closed, open it
+    if (!graph.getValveStatus(currentValve)) {
+      // Open the valve
+      graph.openValve(currentValve);
+      // Call the function again, with time less by 1
+      int checkFlow = recursiveMaxFlow(currentValve, remainingTime - 1, graph, resultMap);
+      if (checkFlow > maxFlow) {
+        maxFlow = checkFlow;
+      }
+      // Close the valve again to maintain correct state moving to part 3
+      graph.closeValve(currentValve);
+    }
+    // Option 3: Leave the valve and move to a new valve
+    // Get the tunnels leaving this valve
+    ArrayList<TunnelEdge> tunnelList = graph.getTunnels().get(currentValve);
+    // Iterate through the tunnels, checking each one
+    for (TunnelEdge tunnel : tunnelList) {
+      String destValve = tunnel.getDest().getValveName();
+      int checkFlow = recursiveMaxFlow(destValve, remainingTime - 1, graph, resultMap);
+      if (checkFlow > maxFlow) {
+        maxFlow = checkFlow;
+      }
+    }
+
+    int finalFlow = maxFlow + graph.getCurrentFlowRate();
+
+    // If we have gotten to this point, we need to add it to the result map
+    if (resultMap == null || !resultMap.containsKey(currentValve)) {
+      resultMap.put(currentValve, new HashMap<Integer, HashMap<HashMap<String, Boolean>, Integer>>());
+    }
+    if (resultMap.get(currentValve) == null || !resultMap.get(currentValve).containsKey(remainingTime)) {
+      resultMap.get(currentValve).put(remainingTime, new HashMap<HashMap<String, Boolean>, Integer>());
+    }
+    resultMap.get(currentValve).get(remainingTime).put(currentValveStatus, finalFlow);
+
+    // Finally, return the maximum flow found
+    return finalFlow;
   }
 }

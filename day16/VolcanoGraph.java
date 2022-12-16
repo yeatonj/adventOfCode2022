@@ -40,11 +40,16 @@ public class VolcanoGraph {
     return this.currentFlowRate;
   }
 
+  public boolean getValveStatus(String valveName) {
+    return this.valvesOpen.get(valveName);
+  }
+
   // Method to open a valve
   public void openValve(String valveName) {
     ValveNode currentValve = valveNameMap.get(valveName);
     boolean status = currentValve.openValve();
     valvesOpen.put(valveName, status);
+    this.currentFlowRate += currentValve.getFlowRate();
   }
 
   // Method to close a valve
@@ -52,6 +57,7 @@ public class VolcanoGraph {
     ValveNode currentValve = valveNameMap.get(valveName);
     boolean status = currentValve.closeValve();
     valvesOpen.put(valveName, status);
+    this.currentFlowRate -= currentValve.getFlowRate();
   }
 
 
