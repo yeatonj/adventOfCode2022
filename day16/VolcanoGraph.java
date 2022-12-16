@@ -56,4 +56,27 @@ public class VolcanoGraph {
     // Add the edge to the arraylist in the tunnelMap
     this.tunnelMap.get(origin).add(newTunnel);
   }
+
+  // Method to print the current state of the graph
+  public String toString() {
+    String returnString = "";
+    returnString += ("Current flow rate: " + this.currentFlowRate + "\n");
+    returnString += "Current Nodes in graph:\n";
+    for (HashMap.Entry<String, ValveNode> mapEl : valveNameMap.entrySet()) {
+      String openString = "Current Status: Closed";
+      if (mapEl.getValue().getValveStatus()) {
+        openString = "Current Status: Open";
+      }
+      returnString += (mapEl.getKey() + " " + mapEl.getValue().getFlowRate() + ", " + openString + "\n");
+    }
+    returnString += "Current Tunnels in graph:\n";
+    for (HashMap.Entry<String, ArrayList<TunnelEdge>> mapEl : tunnelMap.entrySet()) {
+      returnString += ("From Valve " + mapEl.getKey() + ":\n");
+      for (TunnelEdge tunnel : mapEl.getValue()) {
+        returnString += ("To Valve " + tunnel.getDest().getValveName() + ", length " + tunnel.getWeight() + "||\t");
+      }
+      returnString += "\n";
+    }
+    return returnString;
+}
 }
