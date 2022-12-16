@@ -10,12 +10,14 @@ public class VolcanoGraph {
   // Instance Variables
   HashMap<String, ValveNode> valveNameMap; // Access valves through their name
   HashMap<String, ArrayList<TunnelEdge>> tunnelMap; // access lists of edges from a node name
+  int currentFlowRate; // Will be adjusted up when a valve is opened
 
 
   // Constructor
   public VolcanoGraph() {
     this.valveNameMap = new HashMap<>();
     this.tunnelMap = new HashMap<>();
+    this.currentFlowRate = 0;
   }
 
 

@@ -11,6 +11,7 @@ public class ValveNode {
   private String valveName;
   private int valveNum;
   private int flowRate;
+  private boolean isOpen;
 
   // Constructor
   public ValveNode(String valveName, int flowRate) {
@@ -21,6 +22,7 @@ public class ValveNode {
     // Assign the other variables
     this.valveName = valveName;
     this.flowRate = flowRate;
+    this.isOpen = false;
   }
 
   // Getters
@@ -36,7 +38,17 @@ public class ValveNode {
     return this.valveNum;
   }
 
+  public boolean getValveStatus() {
+    return this.isOpen;
+  }
+
   public static int getNumValves() {
     return ValveNode.numValves;
+  }
+
+  // Method to open the valve
+  public boolean openValve() {
+    this.isOpen = true;
+    return this.isOpen;
   }
 }
