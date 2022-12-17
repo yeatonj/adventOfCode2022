@@ -13,6 +13,9 @@ public class VolcanoGraph {
   private int currentFlowRate; // Will be adjusted up when a valve is opened
   private HashMap<String, Boolean> valvesOpen; // Each valve is mapped to whether it is open (true) or closed (false)
   private ArrayList<String> valveList; // array of valves
+  private int numValves;
+  private int numValvesOpen;
+  private int maxFlowRate;
 
 
   // Constructor
@@ -22,6 +25,9 @@ public class VolcanoGraph {
     this.valvesOpen = new HashMap<>();
     this.valveList = new ArrayList<>();
     this.currentFlowRate = 0;
+    this.numValvesOpen = 0;
+    this.numValves = 0;
+    this.maxFlowRate = 0;
   }
 
 
@@ -54,12 +60,21 @@ public class VolcanoGraph {
     return returnString;
   }
 
+  public boolean allValvesOpen() {
+    return (this.numValves == this.numValvesOpen);
+  }
+
+  public int getMaxFlowRate() {
+    return this.maxFlowRate;
+  }
+
   // Method to open a valve
   public void openValve(String valveName) {
     ValveNode currentValve = valveNameMap.get(valveName);
     boolean status = currentValve.openValve();
     valvesOpen.put(valveName, status);
     this.currentFlowRate += currentValve.getFlowRate();
+    this.numValvesOpen++;
   }
 
   // Method to close a valve
@@ -68,6 +83,7 @@ public class VolcanoGraph {
     boolean status = currentValve.closeValve();
     valvesOpen.put(valveName, status);
     this.currentFlowRate -= currentValve.getFlowRate();
+    this.numValvesOpen--;
   }
 
 
@@ -81,6 +97,7 @@ public class VolcanoGraph {
     // Add a new valve to the map
     ValveNode newValve = new ValveNode(valveName, flowRate);
     this.valveNameMap.put(valveName, newValve);
+    this.maxFlowRate += flowRate;
 
     // And add the node to the list of possible origins for tunnels
     this.tunnelMap.put(valveName, new ArrayList<TunnelEdge>());
@@ -88,6 +105,7 @@ public class VolcanoGraph {
     // And add the valve to the valve map (based on its name) as closed (false)
     this.valvesOpen.put(valveName, false);
     this.valveList.add(valveName);
+    this.numValves++;
   }
 
   // Method to add a tunnel based on an origin, destination, and length
