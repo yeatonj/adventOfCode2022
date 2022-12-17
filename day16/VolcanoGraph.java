@@ -12,6 +12,7 @@ public class VolcanoGraph {
   private HashMap<String, ArrayList<TunnelEdge>> tunnelMap; // access lists of edges from a node name
   private int currentFlowRate; // Will be adjusted up when a valve is opened
   private HashMap<String, Boolean> valvesOpen; // Each valve is mapped to whether it is open (true) or closed (false)
+  private ArrayList<String> valveList; // array of valves
 
 
   // Constructor
@@ -19,6 +20,7 @@ public class VolcanoGraph {
     this.valveNameMap = new HashMap<>();
     this.tunnelMap = new HashMap<>();
     this.valvesOpen = new HashMap<>();
+    this.valveList = new ArrayList<>();
     this.currentFlowRate = 0;
   }
 
@@ -42,6 +44,14 @@ public class VolcanoGraph {
 
   public boolean getValveStatus(String valveName) {
     return this.valvesOpen.get(valveName);
+  }
+
+  public String getValveStatusString() {
+    String returnString = "";
+    for (String valve : this.valveList) {
+      returnString += (valve + valvesOpen.get(valve));
+    }
+    return returnString;
   }
 
   // Method to open a valve
@@ -77,6 +87,7 @@ public class VolcanoGraph {
 
     // And add the valve to the valve map (based on its name) as closed (false)
     this.valvesOpen.put(valveName, false);
+    this.valveList.add(valveName);
   }
 
   // Method to add a tunnel based on an origin, destination, and length
