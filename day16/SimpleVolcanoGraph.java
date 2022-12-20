@@ -1,14 +1,15 @@
-// Class to represent the graph of valves in the volcano
+// Class to represent a simplified version of the volcano, in which valves that
+// have no flow are removed
 // Written for AOC 2022
 // Written by: Josh Yeaton
-// Written on 12/16/2022
+// Written on 12/18/2022
 
 import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 
-public class VolcanoGraph {
+public class SimpleVolcanoGraph extends VolcanoGraph{
   // Instance Variables
   private HashMap<String, ValveNode> valveNameMap; // Access valves through their name
   private HashMap<String, ArrayList<TunnelEdge>> tunnelMap; // access lists of edges from a node name
@@ -21,20 +22,89 @@ public class VolcanoGraph {
   private ArrayList<ArrayList<Integer>> adjMatrix; // by alphabetical order
 
 
-  // Constructor
-  public VolcanoGraph() {
-    this.valveNameMap = new HashMap<>();
+  // Constructor - simplifies the graph passed in to remove nodes with 0 flow
+  public SimpleVolcanoGraph(VolcanoGraph elephantGraph) {
+    // Initialize variables
+    this.valveNameMap = new HashMap<>(); // Fully initialized below
     this.tunnelMap = new HashMap<>();
-    this.valvesOpen = new HashMap<>();
-    this.valveList = new ArrayList<>();
-    this.adjMatrix = null;
+    this.valvesOpen = new HashMap<>(); // Fully initialized below
+    this.valveList = new ArrayList<>(); // Fully initialized below
     this.currentFlowRate = 0;
     this.numValvesOpen = 0;
-    this.numValves = 0;
-    this.maxFlowRate = 0;
+    // Initialize instance variables and grab relevant info from the complex graph
+    HashMap<String, ValveNode> complexValveNameMap = elephantGraph.getValves();
+    HashMap<String, ArrayList<TunnelEdge>> complexTunnelMap = elephantGraph.getTunnels();
+    ArrayList<String> complexValveList = elephantGraph.getValveList();
+    // First, grab only the valves with non-zero flow from the original graph, after adding source node AA
+    int index = 0;
+    ArrayList<Integer> indicesOfValves = new ArrayList<>();
+    this.valveList.add(complexValveList.get(0));
+    this.valveNameMap.put(complexValveList.get(0), complexValveNameMap.get(complexValveList.get(0)));
+    indicesOfValves.add(0);
+    for (String valve : complexValveList) {
+      if (complexValveNameMap.get(valve).getFlowRate() > 0 ) {
+        this.valveList.add(valve);
+        this.valveNameMap.put(valve, complexValveNameMap.get(valve));
+        indicesOfValves.add(index);
+      }
+      index++;
+    }
+    // Set the number of valves
+    this.numValves = this.valveList.size();
+    // Set the flow rate from the parent graph
+    this.maxFlowRate = elephantGraph.getMaxFlowRate();
+    System.out.println(indicesOfValves);
+
+    // Set all valves to closed
+    for (String valve : this.valveList) {
+      valvesOpen.put(valve, false);
+    }
+
+    // Now, we calculate the distance matrix from the parent's using floyd
+    // warshall
+    ArrayList<ArrayList<Integer>> dist = elephantGraph.getAdjMatrix();
+    for (int i = 0; i < dist.size(); i++) {
+      dist.get(i).add(i, 0);
+      dist.get(i).remove(i+1);
+    }
+    for (int k = 0; k < dist.size(); k++) {
+      for (int i = 0; i < dist.size(); i++) {
+        for (int j = 0; j < dist.size(); j++) {
+          if (dist.get(i).get(k) == null || dist.get(k).get(j) == null) {
+            continue;
+          }
+          else if (dist.get(i).get(j) == null ||
+                  dist.get(i).get(j) > dist.get(i).get(k) + dist.get(k).get(j)) {
+            dist.get(i).add(j, dist.get(i).get(k) + dist.get(k).get(j));
+            dist.get(i).remove(j+1);
+          }
+        }
+      }
+    }
+    // At this point, dist is all the values, so now grab only those that matter
+    // And create a new, simplified adjacency matrix
+    this.adjMatrix = new ArrayList<>();
+    for (int i = 0; i < this.numValves; i++) {
+      ArrayList<Integer> adjRow = new ArrayList<>();
+      ArrayList<TunnelEdge> tunnelsFromSource = new ArrayList<>();
+      int row = indicesOfValves.get(i);
+      String sourceValve = this.valveList.get(i);
+      for (int j = 0; j < this.numValves; j++) {
+        int col = indicesOfValves.get(j);
+        String destValve = this.valveList.get(j);
+        // Add to the adjacency list
+        adjRow.add(dist.get(row).get(col));
+        // And add the edge at the same time
+        if (row != col) {
+          tunnelsFromSource.add(new TunnelEdge(dist.get(row).get(col), valveNameMap.get(sourceValve), valveNameMap.get(destValve)));
+        }
+      }
+      this.adjMatrix.add(adjRow);
+      this.tunnelMap.put(sourceValve, tunnelsFromSource);
+    }
   }
 
-
+  // ----------------- Simplified Graph Constructed, below is copied from super class
   // Getters
   public HashMap<String, ValveNode> getValves() {
     return this.valveNameMap;
@@ -192,4 +262,5 @@ public class VolcanoGraph {
     }
     return returnString;
   }
+
 }
