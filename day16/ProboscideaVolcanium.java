@@ -11,6 +11,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Collections;
+import java.util.Map;
 
 public class ProboscideaVolcanium {
   public static void main(String[] args) throws FileNotFoundException {
@@ -102,16 +104,22 @@ public class ProboscideaVolcanium {
     // Find the max flow rate in 30 mins (Part 1)
     String startValve = "AA";
     int timeLim = 30;
-    int result = findMaxFlow(startValve, timeLim, simpleElephantVolcano);
+    HashMap<String, Integer> solutions = new HashMap<>();
+    int result = findMaxFlow(startValve, timeLim, simpleElephantVolcano, solutions);
     // int result = findMaxFlow(startValve, timeLim, elephantVolcano);
     System.out.println("Max recorded flow, part 1, is: " + result);
+    System.out.println(solutions.size());
 
-    // // Part 2 : an elephant can help, start at t = 26 minutes
-    // startValve = "AA";
-    // timeLim = 26;
-    // result = findMaxFlowHelp(startValve, timeLim, simpleElephantVolcano);
-    // // int result = findMaxFlow(startValve, timeLim, elephantVolcano);
-    // System.out.println("Max recorded flow, part 2, is: " + result);
+    // Part 2 : an elephant can help, start at t = 26 minutes
+    startValve = "AA";
+    timeLim = 26;
+    HashMap<String, Integer> part2Solutions = new HashMap<>();
+    result = findMaxFlow(startValve, timeLim, simpleElephantVolcano, part2Solutions);
+    // int result = findMaxFlow(startValve, timeLim, elephantVolcano);
+    System.out.println("Max recorded flow, in 26 minutes, is: " + result);
+    System.out.println(part2Solutions.size());
+    int sharedSol = findSharedSolution(part2Solutions);
+    System.out.println("Shared solution is: " + sharedSol);
   }
 
 
@@ -141,7 +149,7 @@ public class ProboscideaVolcanium {
 
 
   // Method to find the maximum flow rate given a starting valve and time limit
-  public static int findMaxFlow(String startingValve, int timeLimit, VolcanoGraph graph) {
+  public static int findMaxFlow(String startingValve, int timeLimit, VolcanoGraph graph, HashMap<String, Integer> solutions) {
     if (!graph.getValves().containsKey(startingValve)) {
       System.out.println("Valve not in Volcano, stopping analysis.");
       return -1;
@@ -149,9 +157,8 @@ public class ProboscideaVolcanium {
 
     ArrayList<String> openedNodes = new ArrayList<>();
     ArrayList<Integer> openedTimes = new ArrayList<>();
-    HashMap<String, ArrayList<Integer>> solutions = new HashMap<>();
     // Call the recursive function
-    int maxVal = recursiveMaxFlow(startingValve, 0, timeLimit, 0, graph, openedNodes, openedTimes);
+    int maxVal = recursiveMaxFlow(startingValve, 0, timeLimit, 0, graph, openedNodes, openedTimes, solutions);
     return maxVal;
   }
 
@@ -164,7 +171,8 @@ public class ProboscideaVolcanium {
   int currentTotalFlow,
   VolcanoGraph graph,
   ArrayList<String> visitedNodes,
-  ArrayList<Integer> visitedTimes
+  ArrayList<Integer> visitedTimes,
+  HashMap<String, Integer> solutions
   ) {
     // First, the base case - we have opened all nodes
     if (graph.allValvesOpen()) {
@@ -188,6 +196,8 @@ public class ProboscideaVolcanium {
           int upToTime = maxTime - currentTime;
           checkBelow = upToTime * (graph.getCurrentFlowRate());
           int totalFlow = currentTotalFlow + checkBelow;
+          String nodesTraveled = valveOrderToString(visitedNodes);
+          addToSolutions(nodesTraveled, totalFlow, solutions);
         } else {
           int travelFlow = ((travelTime + 1) * graph.getCurrentFlowRate());
           // Add this node to the visited nodes, as well as the
@@ -196,7 +206,7 @@ public class ProboscideaVolcanium {
           graph.openValve(destValve);
           // System.out.println(visitedNodes);
           // System.out.println(visitedTimes);
-          checkBelow = travelFlow + recursiveMaxFlow(destValve, currentTime + travelTime + 1, maxTime, currentTotalFlow + travelFlow, graph, visitedNodes, visitedTimes);
+          checkBelow = travelFlow + recursiveMaxFlow(destValve, currentTime + travelTime + 1, maxTime, currentTotalFlow + travelFlow, graph, visitedNodes, visitedTimes, solutions);
           graph.closeValve(destValve);
           visitedNodes.remove(visitedNodes.size() - 1);
           visitedTimes.remove(visitedTimes.size() - 1);
@@ -211,9 +221,47 @@ public class ProboscideaVolcanium {
 
   private static String valveOrderToString(ArrayList<String> openedNodes) {
     String returnString = "";
-    for (String valve : openedNodes) {
+    ArrayList<String> sortedNodes = (ArrayList)openedNodes.clone();
+    Collections.sort(sortedNodes);
+    for (String valve : sortedNodes) {
       returnString += valve;
     }
     return returnString;
+  }
+
+  private static HashSet<String> valveOrderToSet(String valves) {
+    HashSet<String> valveSet = new HashSet<>();
+    for (int i = 0; i < valves.length()/2; i++) {
+      valveSet.add(valves.substring(2*i, 2*i + 2));
+    }
+    return valveSet;
+  }
+
+  private static void addToSolutions(String valvesVisited, int total, HashMap<String, Integer> solutionMap) {
+    int current = solutionMap.getOrDefault(valvesVisited, -1);
+    if (total > current) {
+      solutionMap.put(valvesVisited, total);
+    }
+  }
+
+  private static int findSharedSolution(HashMap<String, Integer> solutions) {
+    int maxSharedVal = 0;
+    HashMap<String,Integer> solutionsCopy = new HashMap<String,Integer>(solutions);
+    for (HashMap.Entry<String,Integer> entryOut : solutions.entrySet()) {
+      HashSet<String> outerSet = valveOrderToSet(entryOut.getKey());
+      for (HashMap.Entry<String,Integer> entryIn : solutionsCopy.entrySet()) {
+        HashSet<String> innerSet = valveOrderToSet(entryIn.getKey());
+        if (Collections.disjoint(innerSet, outerSet)) {
+          // System.out.println(innerSet);
+          // System.out.println(outerSet);
+          // System.out.println("");
+          int sum = entryIn.getValue() + entryOut.getValue();
+          if (sum > maxSharedVal) {
+            maxSharedVal = sum;
+          }
+        }
+      }
+    }
+    return maxSharedVal;
   }
 }
