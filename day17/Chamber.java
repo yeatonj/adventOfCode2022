@@ -4,6 +4,7 @@
 // Written on 12/22/2022
 
 import java.util.ArrayList;
+import java.awt.Point;
 
 class Chamber {
   // Instance variables
@@ -16,9 +17,10 @@ class Chamber {
   private int dropY;
   private char wallPattern;
   private char emptyPattern;
+  private char rockPattern;
 
   // Constructor
-  Chamber(String jetDirections, int chamberWidth, char floorPattern, char wallPattern, char emptyPattern) {
+  Chamber(String jetDirections, int chamberWidth, char floorPattern, char wallPattern, char emptyPattern, char rockPattern) {
     this.jetNumber = 0;
     this.rockHeight = 0;
     this.jetDirections = jetDirections;
@@ -27,6 +29,7 @@ class Chamber {
     this.dropY = 3;
     this.wallPattern = wallPattern;
     this.emptyPattern = emptyPattern;
+    this.rockPattern = rockPattern;
 
     // Create the floor and add to the contents
     ChamberContents[] floor = new ChamberContents[this.chamberWidth + 2];
@@ -39,7 +42,7 @@ class Chamber {
 
   // Draw chamber
   public void drawChamber() {
-    for (int i = rockHeight; i >=0; i--) {
+    for (int i = contentsArray.size() - 1; i >=0; i--) {
       for (ChamberContents content : contentsArray.get(i)) {
         if (content != null) {
           System.out.print(content.getDrawChar());
@@ -52,13 +55,22 @@ class Chamber {
   }
 
   // Drop shape
-  public void dropShape() {
-    while (this.contentsArray.size() < rockHeight + 4) {
+  public void dropShape(Shape shape) {
+    while (this.contentsArray.size() < rockHeight + 5) {
       ChamberContents[] emptyRow = new ChamberContents[this.chamberWidth + 2];
       emptyRow[0] = new ChamberWall(this.wallPattern);
       emptyRow[this.chamberWidth + 1] = new ChamberWall(this.wallPattern);
       this.contentsArray.add(emptyRow);
     }
     System.out.println("Done.");
+  }
+
+  public void addShape(Shape shape) {
+    ArrayList<Point> pointsToAdd = shape.getPoints();
+    for (Point point : pointsToAdd) {
+      int xCoord = (int)point.getX();
+      int yCoord = (int)point.getY();
+      contentsArray.get(yCoord)[xCoord] = new RockParticle(this.rockPattern);
+    }
   }
 }

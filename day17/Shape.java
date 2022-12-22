@@ -4,7 +4,7 @@
 // Written on 12/22/2022
 
 import java.awt.Point;
-import java.util. ArrayList;
+import java.util.ArrayList;
 
 abstract class Shape {
   // Instance variables
@@ -20,10 +20,10 @@ abstract class Shape {
 }
 
 // Class for the horizontal line shape
-class shapeOne extends Shape {
+class ShapeOne extends Shape {
   private ArrayList<Point> points; // Points added from left to right, top to bottom
 
-  shapeOne(int originX, int originY) {
+  ShapeOne(int originX, int originY) {
     this.points = new ArrayList<>();
     this.points.add(new Point(originX, originY));
     this.points.add(new Point(originX + 1, originY));

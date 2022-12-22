@@ -10,10 +10,13 @@ public class PyroclasticFlow {
     char floorPattern = '-';
     char wallPattern = '|';
     char emptyPattern = '.';
+    char rockPattern = '#';
 
-    Chamber flowChamber = new Chamber(jetDirec, chamberWidth, floorPattern, wallPattern, emptyPattern);
+    Chamber flowChamber = new Chamber(jetDirec, chamberWidth, floorPattern, wallPattern, emptyPattern, rockPattern);
+    Shape dropShape = new ShapeOne(3, 4);
     flowChamber.drawChamber();
-    flowChamber.dropShape();
+    flowChamber.dropShape(dropShape);
+    flowChamber.addShape(dropShape);
     flowChamber.drawChamber();
   }
 }
