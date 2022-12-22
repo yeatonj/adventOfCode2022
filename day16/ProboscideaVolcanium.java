@@ -99,14 +99,19 @@ public class ProboscideaVolcanium {
     }
 
 
-    // Find the max flow rate in 30 mins
+    // Find the max flow rate in 30 mins (Part 1)
     String startValve = "AA";
     int timeLim = 30;
     int result = findMaxFlow(startValve, timeLim, simpleElephantVolcano);
     // int result = findMaxFlow(startValve, timeLim, elephantVolcano);
+    System.out.println("Max recorded flow, part 1, is: " + result);
 
-
-    System.out.println("Max recorded flow is: " + result);
+    // // Part 2 : an elephant can help, start at t = 26 minutes
+    // startValve = "AA";
+    // timeLim = 26;
+    // result = findMaxFlowHelp(startValve, timeLim, simpleElephantVolcano);
+    // // int result = findMaxFlow(startValve, timeLim, elephantVolcano);
+    // System.out.println("Max recorded flow, part 2, is: " + result);
   }
 
 
@@ -142,19 +147,11 @@ public class ProboscideaVolcanium {
       return -1;
     }
 
-    // Maps a valve to a map of amounts of time left to a map of valve configs which are mapped to a max flow
-    // Fundamentally, you give the outer map your position and it returns possible times left.
-    // You then give that map your current time left, and it returns possible valve configs
-    // You then give it your current config, and it gives you the max flow based on all these
-    // We will be checking this map at the top of the iteration to see if the value exists,
-    // and if it does, simply returning that.  If it doesn't, we'll add it at the end of the loop
-    HashMap<String, HashMap<Integer, HashMap<String, Integer>>> valveMaxFlows = new HashMap<>();
-
-    ArrayList<Integer> currentMaxFlow = new ArrayList<>();
-    currentMaxFlow.add(0);
-    HashSet<TunnelEdge> visitedEdges = new HashSet<>();
+    ArrayList<String> openedNodes = new ArrayList<>();
+    ArrayList<Integer> openedTimes = new ArrayList<>();
+    HashMap<String, ArrayList<Integer>> solutions = new HashMap<>();
     // Call the recursive function
-    int maxVal = recursiveMaxFlow(startingValve, 0, timeLimit, 0, currentMaxFlow, graph, visitedEdges, valveMaxFlows);
+    int maxVal = recursiveMaxFlow(startingValve, 0, timeLimit, 0, graph, openedNodes, openedTimes);
     return maxVal;
   }
 
@@ -165,86 +162,58 @@ public class ProboscideaVolcanium {
   int currentTime,
   int maxTime,
   int currentTotalFlow,
-  ArrayList<Integer> currentMaxTotalFlow,
   VolcanoGraph graph,
-  HashSet<TunnelEdge> visitedEdges,
-  HashMap<String, HashMap<Integer, HashMap<String, Integer>>> resultMap) {
-    // First, the base case - if time is out, we can't have any flow
-    if (currentTime == maxTime) {
-      return 0;
-    }
-    // Or, if all valves are open, just add the total flow for the rest of
-    // our remaining time to the total
+  ArrayList<String> visitedNodes,
+  ArrayList<Integer> visitedTimes
+  ) {
+    // First, the base case - we have opened all nodes
     if (graph.allValvesOpen()) {
+      // System.out.println("Here.");
+      // System.out.println(visitedNodes);
       return (maxTime - currentTime) * graph.getMaxFlowRate();
     }
-
-    // Next, check to see if we already have a maximum assigned for this config
-    String currentValveStatus = graph.getValveStatusString();
-    if(
-    resultMap != null &&
-    resultMap.containsKey(currentValve) &&
-    resultMap.get(currentValve) != null &&
-    resultMap.get(currentValve).containsKey(currentTime) &&
-    resultMap.get(currentValve).get(currentTime) != null &&
-    resultMap.get(currentValve).get(currentTime).containsKey(currentValveStatus)
-    ) {
-      return resultMap.get(currentValve).get(currentTime).get(currentValveStatus);
-    }
-
-    // Otherwise, proceed to recursive calls
-    int maxBelow = 0;
-    int checkBelow = 0;
-    // int maxBelow = recursiveMaxFlow(currentValve, currentTime + 1, maxTime, newFlow, graph, resultMap);
-
-    // Option 1: If the valve we are at is closed, open it
-    if (!graph.getValveStatus(currentValve)) {
-      // Open the valve
-      int flowToNextNode = 1 * graph.getCurrentFlowRate();
-      graph.openValve(currentValve);
-      // Call the function again, with time increased by 1
-      checkBelow = flowToNextNode + recursiveMaxFlow(currentValve, currentTime + 1, maxTime, flowToNextNode + currentTotalFlow, currentMaxTotalFlow, graph, visitedEdges, resultMap);
-      if (checkBelow > maxBelow) {
-        maxBelow = checkBelow;
-      }
-      // Close the valve again to maintain correct state moving to part 2
-      graph.closeValve(currentValve);
-    }
-    // Option 2: Leave the valve and move to a new valve along unique edges
-    // Get the tunnels leaving this valve
+    // Otherwise, move to each node in this node's connections and open it, then
+    // repeat
     ArrayList<TunnelEdge> tunnelList = graph.getTunnels().get(currentValve);
+    int checkBelow = 0;
+    int maxBelow = 0;
     // Iterate through the tunnels, checking each one
     for (TunnelEdge tunnel : tunnelList) {
       String destValve = tunnel.getDest().getValveName();
-      int travelTime = tunnel.getWeight();
-      int travelFlow = (travelTime * graph.getCurrentFlowRate());
-      if (currentTime + travelTime > maxTime) {
-        checkBelow = (maxTime - currentTime) * graph.getCurrentFlowRate();
-      } else
-      checkBelow = travelFlow + recursiveMaxFlow(destValve, currentTime + travelTime, maxTime, travelFlow + currentTotalFlow, currentMaxTotalFlow, graph, visitedEdges, resultMap);
-      if (checkBelow > maxBelow) {
-        maxBelow = checkBelow;
+      // System.out.println(destValve);
+      if (!destValve.equals("AA") && !visitedNodes.contains(destValve)) {
+        // Calculate the time to travel to the node, as well as the flow along that path
+        int travelTime = tunnel.getWeight();
+        if (currentTime + travelTime + 1 > maxTime) {
+          int upToTime = maxTime - currentTime;
+          checkBelow = upToTime * (graph.getCurrentFlowRate());
+          int totalFlow = currentTotalFlow + checkBelow;
+        } else {
+          int travelFlow = ((travelTime + 1) * graph.getCurrentFlowRate());
+          // Add this node to the visited nodes, as well as the
+          visitedNodes.add(destValve);
+          visitedTimes.add(currentTime + travelTime + 1);
+          graph.openValve(destValve);
+          // System.out.println(visitedNodes);
+          // System.out.println(visitedTimes);
+          checkBelow = travelFlow + recursiveMaxFlow(destValve, currentTime + travelTime + 1, maxTime, currentTotalFlow + travelFlow, graph, visitedNodes, visitedTimes);
+          graph.closeValve(destValve);
+          visitedNodes.remove(visitedNodes.size() - 1);
+          visitedTimes.remove(visitedTimes.size() - 1);
+        }
+        if (checkBelow > maxBelow) {
+          maxBelow = checkBelow;
+        }
       }
     }
-
-    int totalFlow = maxBelow + currentTotalFlow;
-    if (totalFlow > currentMaxTotalFlow.get(0)) {
-      currentMaxTotalFlow.add(0, totalFlow);
-    }
-
-    // If we have gotten to this point, we need to add it to the result map
-    if (resultMap == null || !resultMap.containsKey(currentValve)) {
-      resultMap.put(currentValve, new HashMap<Integer, HashMap<String, Integer>>());
-    }
-    if (resultMap.get(currentValve) == null || !resultMap.get(currentValve).containsKey(currentTime)) {
-      resultMap.get(currentValve).put(currentTime, new HashMap<String, Integer>());
-    }
-    resultMap.get(currentValve).get(currentTime).put(currentValveStatus, maxBelow);
-
-    // Finally, return the maximum flow found below the current configuration
     return maxBelow;
   }
 
-
-
+  private static String valveOrderToString(ArrayList<String> openedNodes) {
+    String returnString = "";
+    for (String valve : openedNodes) {
+      returnString += valve;
+    }
+    return returnString;
+  }
 }

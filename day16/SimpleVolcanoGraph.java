@@ -110,6 +110,10 @@ public class SimpleVolcanoGraph extends VolcanoGraph{
     return this.valveNameMap;
   }
 
+  public int getNumValves() {
+    return this.numValves;
+  }
+
   public HashMap<String, ArrayList<TunnelEdge>> getTunnels() {
     return this.tunnelMap;
   }
@@ -135,7 +139,7 @@ public class SimpleVolcanoGraph extends VolcanoGraph{
   }
 
   public boolean allValvesOpen() {
-    return (this.numValves == this.numValvesOpen);
+    return (this.currentFlowRate == this.maxFlowRate);
   }
 
   public int getMaxFlowRate() {
