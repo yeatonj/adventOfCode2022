@@ -18,6 +18,7 @@ class Chamber {
   private char wallPattern;
   private char emptyPattern;
   private char rockPattern;
+  private int currentJetIndex;
 
   // Constructor
   Chamber(String jetDirections, int chamberWidth, char floorPattern, char wallPattern, char emptyPattern, char rockPattern) {
@@ -30,6 +31,7 @@ class Chamber {
     this.wallPattern = wallPattern;
     this.emptyPattern = emptyPattern;
     this.rockPattern = rockPattern;
+    this.currentJetIndex = 0;
 
     // Create the floor and add to the contents
     ChamberContents[] floor = new ChamberContents[this.chamberWidth + 2];
@@ -56,13 +58,59 @@ class Chamber {
 
   // Drop shape
   public void dropShape(Shape shape) {
+    // Ensure the chamber is big enough to track current location of the rocks
     while (this.contentsArray.size() < rockHeight + 5) {
       ChamberContents[] emptyRow = new ChamberContents[this.chamberWidth + 2];
       emptyRow[0] = new ChamberWall(this.wallPattern);
       emptyRow[this.chamberWidth + 1] = new ChamberWall(this.wallPattern);
       this.contentsArray.add(emptyRow);
     }
-    System.out.println("Done.");
+
+    // Loop through the drop:
+    boolean impacted = false;
+    while (!impacted) {
+      if (this.jetDirections.charAt(this.currentJetIndex % this.jetDirections.length()) == '<') {
+        // Check to the left
+        ArrayList<Point> leftPoints = shape.leftMovePoints();
+        // if it doesn't impact, move it to the left
+        if (!checkImpact(leftPoints)) {
+          shape.moveLeft();
+        }
+      } else {
+        // Check to the right
+        ArrayList<Point> rightPoints = shape.rightMovePoints();
+        if (!checkImpact(rightPoints)) {
+          shape.moveRight();
+        }
+      }
+      // Increment the jet index for the next shape
+      this.currentJetIndex++;
+
+      // Now, check down
+      ArrayList<Point> downPoints = shape.downMovePoints();
+      if (!checkImpact(downPoints)) {
+        shape.moveDown();
+      } else {
+        impacted = true;
+      }
+    }
+    // Finally, draw the shape once it has hit the ground
+    addShape(shape);
+    // Update the height of the rock
+    if (shape.highestRow() > this.rockHeight) {
+      this.rockHeight = shape.highestRow();
+    }
+  }
+
+  public boolean checkImpact(ArrayList<Point> pointsToCheck) {
+    for (Point point : pointsToCheck) {
+      int xLoc = (int)point.getX();
+      int yLoc = (int)point.getY();
+      if (yLoc <= contentsArray.size() && this.contentsArray.get(yLoc)[xLoc] != null) {
+        return true;
+      }
+    }
+    return false;
   }
 
   public void addShape(Shape shape) {

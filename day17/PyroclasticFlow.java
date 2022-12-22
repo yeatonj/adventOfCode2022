@@ -16,7 +16,26 @@ public class PyroclasticFlow {
     Shape dropShape = new ShapeOne(3, 4);
     flowChamber.drawChamber();
     flowChamber.dropShape(dropShape);
-    flowChamber.addShape(dropShape);
+    flowChamber.drawChamber();
+    dropShape = new ShapeOne(3, 5);
+    flowChamber.drawChamber();
+    flowChamber.dropShape(dropShape);
+    flowChamber.drawChamber();
+    dropShape = new ShapeOne(3, 6);
+    flowChamber.drawChamber();
+    flowChamber.dropShape(dropShape);
+    flowChamber.drawChamber();
+    dropShape = new ShapeOne(3, 7);
+    flowChamber.drawChamber();
+    flowChamber.dropShape(dropShape);
+    flowChamber.drawChamber();
+    dropShape = new ShapeOne(3, 8);
+    flowChamber.drawChamber();
+    flowChamber.dropShape(dropShape);
+    flowChamber.drawChamber();
+    dropShape = new ShapeOne(3, 9);
+    flowChamber.drawChamber();
+    flowChamber.dropShape(dropShape);
     flowChamber.drawChamber();
   }
 }

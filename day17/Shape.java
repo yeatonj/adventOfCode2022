@@ -16,6 +16,7 @@ abstract class Shape {
   abstract void moveRight();
   abstract void moveDown();
   abstract ArrayList<Point> getPoints();
+  abstract int highestRow();
 
 }
 
@@ -29,6 +30,11 @@ class ShapeOne extends Shape {
     this.points.add(new Point(originX + 1, originY));
     this.points.add(new Point(originX + 2, originY));
     this.points.add(new Point(originX + 3, originY));
+  }
+
+  // Returns the height of the highest point
+  int highestRow() {
+    return (int)this.points.get(0).getY();
   }
 
   // Returns x,y points that need to be empty for a move to the left
