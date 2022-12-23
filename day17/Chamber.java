@@ -26,8 +26,8 @@ class Chamber {
     this.rockHeight = 0;
     this.jetDirections = jetDirections;
     this.chamberWidth = chamberWidth;
-    this.dropX = 2; // Dropping at (2,3) to start
-    this.dropY = 3;
+    this.dropX = 3; // Dropping at (2,3) to start
+    this.dropY = 4;
     this.wallPattern = wallPattern;
     this.emptyPattern = emptyPattern;
     this.rockPattern = rockPattern;
@@ -40,6 +40,18 @@ class Chamber {
     }
     this.contentsArray = new ArrayList<>();
     this.contentsArray.add(floor);
+  }
+
+  public int getDropX() {
+    return this.dropX;
+  }
+
+  public int getDropY() {
+    return this.dropY;
+  }
+
+  public int getRockHeight() {
+    return this.rockHeight;
   }
 
   // Draw chamber
@@ -100,13 +112,14 @@ class Chamber {
     if (shape.highestRow() > this.rockHeight) {
       this.rockHeight = shape.highestRow();
     }
+    this.dropY = this.rockHeight + 4;
   }
 
   public boolean checkImpact(ArrayList<Point> pointsToCheck) {
     for (Point point : pointsToCheck) {
       int xLoc = (int)point.getX();
       int yLoc = (int)point.getY();
-      if (yLoc <= contentsArray.size() && this.contentsArray.get(yLoc)[xLoc] != null) {
+      if (yLoc < contentsArray.size() && this.contentsArray.get(yLoc)[xLoc] != null) {
         return true;
       }
     }
