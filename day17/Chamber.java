@@ -54,6 +54,10 @@ class Chamber {
     return this.rockHeight;
   }
 
+  public int getJetIndex() {
+    return this.currentJetIndex % this.jetDirections.length();
+  }
+
   // Draw chamber
   public void drawChamber() {
     for (int i = contentsArray.size() - 1; i >=0; i--) {
@@ -69,7 +73,7 @@ class Chamber {
   }
 
   // Drop shape
-  public void dropShape(Shape shape) {
+  public int dropShape(Shape shape) {
     // Ensure the chamber is big enough to track current location of the rocks
     while (this.contentsArray.size() < rockHeight + 5) {
       ChamberContents[] emptyRow = new ChamberContents[this.chamberWidth + 2];
@@ -113,6 +117,7 @@ class Chamber {
       this.rockHeight = shape.highestRow();
     }
     this.dropY = this.rockHeight + 4;
+    return shape.getOriginColumn();
   }
 
   public boolean checkImpact(ArrayList<Point> pointsToCheck) {

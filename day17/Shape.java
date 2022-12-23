@@ -17,6 +17,7 @@ abstract class Shape {
   abstract void moveDown();
   abstract ArrayList<Point> getPoints();
   abstract int highestRow();
+  abstract int getOriginColumn();
 
 }
 
@@ -35,6 +36,11 @@ class ShapeOne extends Shape {
   // Returns the height of the highest point
   int highestRow() {
     return (int)this.points.get(0).getY();
+  }
+
+  // Returns the current x location of the origin
+  int getOriginColumn() {
+    return (int)this.points.get(0).getX();
   }
 
   // Returns x,y points that need to be empty for a move to the left
@@ -104,6 +110,11 @@ class ShapeTwo extends Shape {
   // Returns the height of the highest point
   int highestRow() {
     return (int)this.points.get(0).getY();
+  }
+
+  // Returns the current x location of the origin
+  int getOriginColumn() {
+    return (int)this.points.get(0).getX() - 1;
   }
 
   // Returns x,y points that need to be empty for a move to the left
@@ -178,6 +189,11 @@ class ShapeThree extends Shape {
     return (int)this.points.get(0).getY();
   }
 
+  // Returns the current x location of the origin
+  int getOriginColumn() {
+    return (int)this.points.get(0).getX() - 2;
+  }
+
   // Returns x,y points that need to be empty for a move to the left
   ArrayList<Point> leftMovePoints() {
     ArrayList<Point> leftArray = new ArrayList<>();
@@ -249,6 +265,11 @@ class ShapeFour extends Shape {
     return (int)this.points.get(0).getY();
   }
 
+  // Returns the current x location of the origin
+  int getOriginColumn() {
+    return (int)this.points.get(0).getX();
+  }
+
   // Returns x,y points that need to be empty for a move to the left
   ArrayList<Point> leftMovePoints() {
     ArrayList<Point> leftArray = new ArrayList<>();
@@ -318,6 +339,11 @@ class ShapeFive extends Shape {
   // Returns the height of the highest point
   int highestRow() {
     return (int)this.points.get(0).getY();
+  }
+
+  // Returns the current x location of the origin
+  int getOriginColumn() {
+    return (int)this.points.get(0).getX();
   }
 
   // Returns x,y points that need to be empty for a move to the left
