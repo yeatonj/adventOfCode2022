@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.HashSet;
 import java.util.ArrayList;
+import java.math.BigInteger;
 
 public class GPS {
   public static void main(String[] args) throws FileNotFoundException {
@@ -74,8 +75,61 @@ public class GPS {
     int thirdCoord = mixedList.get((zeroIndex + 3000) % mixedList.size());
     // System.out.println(thirdCoord);
     int coordSum = firstCoord + secondCoord + thirdCoord;
-    System.out.println("Sum of coordinates is: " + coordSum);
+    System.out.println("Sum of coordinates for Part 1 is: " + coordSum);
 
     // Guess of -7196 was incorrect
+
+    // Guess of 9945 was correct
+
+    // Now for part 2.  Remake as long
+    ArrayList<Long> pt2IndexList = new ArrayList<>();
+    ArrayList<Long> pt2OriginalList = new ArrayList<>();
+    ArrayList<Long> pt2MixedList = new ArrayList<>();
+    long key = 811589153;
+    for (i = 0; i < originalList.size(); i++) {
+      pt2IndexList.add((long)i);
+      pt2OriginalList.add(key*(long)originalList.get(i));
+    }
+    // System.out.println(pt2IndexList);
+    // System.out.println(pt2OriginalList);
+
+    int numMixes = 10;
+    for (int j = 0; j < numMixes; j++) {
+      for (i = 0; i < pt2IndexList.size(); i++) {
+        long moveAmount = pt2OriginalList.get(i);
+        long currentIndex = pt2IndexList.indexOf((long)i);
+        long newIndex = currentIndex + moveAmount;
+        // System.out.println(moveAmount);
+        // System.out.println(currentIndex);
+        // System.out.println(newIndex);
+        pt2IndexList.remove((int)currentIndex);
+        long newSize = (long)pt2IndexList.size();
+        newIndex = ((newIndex % newSize) + newSize) % newSize;
+        if (newIndex == 0 && moveAmount != 0) {
+          newIndex = newSize;
+        }
+
+        pt2IndexList.add((int)newIndex, (long)i);
+        // System.out.println(pt2IndexList);
+      }
+    }
+
+    for (i = 0; i < pt2IndexList.size(); i++) {
+      pt2MixedList.add(pt2OriginalList.get(pt2IndexList.get(i).intValue()));
+    }
+    // System.out.println(pt2MixedList);
+    int zeroIndexPt2 = pt2MixedList.indexOf((long)0);
+    // System.out.println(zeroIndexPt2);
+    long firstCoordPt2 = pt2MixedList.get((zeroIndexPt2 + 1000) % pt2MixedList.size());
+    // System.out.println(firstCoordPt2);
+    long secondCoordPt2 = pt2MixedList.get((zeroIndexPt2 + 2000) % pt2MixedList.size());
+    // System.out.println(secondCoordPt2);
+    long thirdCoordPt2 = pt2MixedList.get((zeroIndexPt2 + 3000) % pt2MixedList.size());
+    // System.out.println(thirdCoordPt2);
+    long coordSumPt2 = firstCoordPt2 + secondCoordPt2 + thirdCoordPt2;
+    System.out.println("Sum of coordinates for Part 2 is: " + coordSumPt2);
+
+
+
   }
 }
