@@ -1,25 +1,39 @@
 // Class for creating a robot factory based on several inputs
 // For AOC day 19
 
+import java.util.Arrays;
+import java.util.Collections;
+
 class RobotFactory {
   // Instance variables
   int oreRobotCost; // cost of an ore robot, in ore
   int clayRobotCost; // cost of a clay robot, in ore
   int[] obsidianRobotCost; // cost of an obsidian robot [ore, clay]
   int[] geodeRobotCost; // cost of a geode robot [ore, obsidian]
-  int[] numRobots; // ore, clay, obsidian, geode
+  Integer[] numRobots; // ore, clay, obsidian, geode
   int[] totalResources; // ore, clay, obsidian, geode
   int currentTime; // time elapsed since factory created
+  int maxOreCost;
 
   // Constructor for use in initializing factory
   RobotFactory(int oreCost, int clayCost, int[] obsidianCost, int[] geodeCost) {
     // Initialize cost of robots
     this.oreRobotCost = oreCost;
+    this.maxOreCost = oreCost;
     this.clayRobotCost = clayCost;
+    if (clayCost > oreCost) {
+      this.maxOreCost = clayCost;
+    }
     this.obsidianRobotCost = obsidianCost;
+    if (obsidianCost[0] > this.maxOreCost) {
+      this.maxOreCost = obsidianCost[0];
+    }
     this.geodeRobotCost = geodeCost;
+    if (geodeRobotCost[0] > this.maxOreCost) {
+      this.maxOreCost = geodeRobotCost[0];
+    }
     // Initialize the robots
-    this.numRobots = new int[] {1,0,0,0};
+    this.numRobots = new Integer[] {1,0,0,0};
     // Initialize starting resources
     this.totalResources = new int[] {0,0,0,0};
     this.currentTime = 0;
@@ -30,10 +44,10 @@ class RobotFactory {
     // Initialize cost of robots
     this.oreRobotCost = parentFactory.getOreRobotCost();
     this.clayRobotCost = parentFactory.getClayRobotCost();
-    this.obsidianRobotCost = new int[] {parentFactory.getObsRobotClayCost(), parentFactory.getObsRobotClayCost()};
+    this.obsidianRobotCost = new int[] {parentFactory.getObsRobotOreCost(), parentFactory.getObsRobotClayCost()};
     this.geodeRobotCost = new int[] {parentFactory.getGeodeRobotOreCost(), parentFactory.getGeodeRobotObsCost()};
     // Initialize the robots
-    this.numRobots = new int[] {parentFactory.getNumOreRobots(),
+    this.numRobots = new Integer[] {parentFactory.getNumOreRobots(),
                                 parentFactory.getNumClayRobots(),
                                 parentFactory.getNumObsRobots(),
                                 parentFactory.getNumGeodeRobots()};
@@ -43,6 +57,7 @@ class RobotFactory {
                                     parentFactory.getTotalObs(),
                                     parentFactory.getTotalGeode()};
     this.currentTime = parentFactory.getCurrentTime();
+    this.maxOreCost = parentFactory.getMaxOreCost();
   }
 
   // Getters for robot costs
@@ -109,6 +124,15 @@ class RobotFactory {
     return this.currentTime;
   }
 
+  public int getMaxOreCost() {
+    return this.maxOreCost;
+  }
+
+  // Gets the difference between the most and least number of each robot
+  public int getMinRobots() {
+    return Collections.min(Arrays.asList(numRobots));
+  }
+
   // Function for creating a new instance of a factory from this one with a single timestep
   // making a decision from previous timestep.
   // 0: don't make any robots
@@ -166,29 +190,46 @@ class RobotFactory {
     } else if (robotToMake == 4) {
       this.numRobots[3] += 1;
       this.totalResources[0] -= this.geodeRobotCost[0];
-      this.totalResources[2] -= this.geodeRobotCost[2];
+      this.totalResources[2] -= this.geodeRobotCost[1];
     }
     this.currentTime++;
     return this.totalResources[3];
   }
 
-  // Functions to decide if a certain robot type can be made
+  // Functions to decide if a certain robot type can or should be made
   public boolean makeOreRobot() {
-    return (this.totalResources[0] >= this.oreRobotCost);
+    // Can we make it?
+    boolean canMake = (this.totalResources[0] >= this.oreRobotCost);
+    // Should we make it?
+    boolean shouldMake = numRobots[0] < this.maxOreCost;
+    return (canMake && shouldMake);
   }
 
   public boolean makeClayRobot() {
-    return (this.totalResources[0] >= this.clayRobotCost);
+    boolean canMake = (this.totalResources[0] >= this.clayRobotCost);
+    boolean shouldMake = numRobots[1] < this.obsidianRobotCost[1];
+    return (canMake && shouldMake);
   }
 
   public boolean makeObsRobot() {
-    return (this.totalResources[0] >= this.obsidianRobotCost[0] &&
+    boolean canMake = (this.totalResources[0] >= this.obsidianRobotCost[0] &&
             this.totalResources[1] >= this.obsidianRobotCost[1]);
+    boolean shouldMake = numRobots[2] < this.geodeRobotCost[1];
+    return (canMake && shouldMake);
   }
 
   public boolean makeGeodeRobot() {
     return (this.totalResources[0] >= this.geodeRobotCost[0] &&
             this.totalResources[2] >= this.geodeRobotCost[1]);
+  }
+
+  public String toString() {
+    String returnString = "Factory at time t = " + this.currentTime + ", ";
+    returnString += "with " + this.totalResources[3] + " geodes. ";
+    returnString += "(" + this.totalResources[0] + " Ore, " + this.totalResources[1] + " Clay, " + this.totalResources[2] + " Obsidian).\n";
+    returnString += "Robots: " + this.numRobots[0] + " Ore Robots, " + this.numRobots[1] + " Clay Robots, " + this.numRobots[2] + " Obsidian Robots, " + this.numRobots[3] + " Geode Robots.\n";
+    returnString += "Each ore robot costs " + this.oreRobotCost + " ore. Each clay robot costs " + this.clayRobotCost + " ore. Each obsidian robot costs " + this.obsidianRobotCost[0] + " ore and " + this.obsidianRobotCost[1] + " clay. Each geode robot costs " + this.geodeRobotCost[0] + " ore and " + this.geodeRobotCost[1] + " obsidian.";
+    return returnString;
   }
 
 }
