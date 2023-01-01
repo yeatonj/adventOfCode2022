@@ -52,15 +52,26 @@ class NotEnoughMinerals {
     }
     System.out.println(factoryScores);
     System.out.println(qualityScores);
-    System.out.println("Total quality score is: " + totalQualityScore);
+    System.out.println("Total Part 1 quality score is: " + totalQualityScore);
 
-    // RobotFactory factoryOne = new RobotFactory(4, 2, new int[]{3,14}, new int[]{2,7});
-    // RobotFactory factoryTwo = new RobotFactory(2, 3, new int[]{3,8}, new int[]{3,12});
-    //
-    // int baselineGeodesFactoryOne = findFactoryMax(factoryOne, 24);
-    // int baselineGeodesFactoryTwo = findFactoryMax(factoryTwo, 24);
-    // System.out.println(baselineGeodesFactoryOne + " Geodes from factory one.");
-    // System.out.println(baselineGeodesFactoryTwo + " Geodes from factory two.");
+    // Now, part 2
+    timeLimit = 32;
+    int totalFactoryScore = 1;
+    ArrayList<Integer> pt2FactoryScores = new ArrayList<>();
+    ArrayList<Integer> pt2QualityScores = new ArrayList<>();
+    for (int i = 0; i < 3; i++) {
+
+      RobotFactory tempFactory = new RobotFactory(
+      fileInts.get(i).get(0),
+      fileInts.get(i).get(1),
+      new int[]{fileInts.get(i).get(2),fileInts.get(i).get(3)},
+      new int[]{fileInts.get(i).get(4),fileInts.get(i).get(5)});
+
+      pt2FactoryScores.add(findFactoryMax(tempFactory, timeLimit));
+      totalFactoryScore *= pt2FactoryScores.get(i);
+    }
+    System.out.println(pt2FactoryScores);
+    System.out.println("Total Part 2 quality score is: " + totalFactoryScore);
 
 
   }
