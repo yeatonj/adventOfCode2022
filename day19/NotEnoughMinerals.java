@@ -10,7 +10,7 @@ class NotEnoughMinerals {
     RobotFactory factoryOne = new RobotFactory(4, 2, new int[]{3,14}, new int[]{2,7});
     RobotFactory factoryTwo = new RobotFactory(2, 3, new int[]{3,8}, new int[]{3,18});
 
-    int baselineGeodesFactoryOne = fullSim(factoryOne, 24, 10);
+    int baselineGeodesFactoryOne = factoryOne.getUpperGeodeBound(24);
     // int baselineGeodesFactoryTwo = fullSim(factoryTwo, 24, 10);
     System.out.println(baselineGeodesFactoryOne + " Geodes from factory one.");
     // System.out.println(baselineGeodesFactoryTwo + " Geodes from factory two.");
@@ -82,9 +82,6 @@ class NotEnoughMinerals {
         else if (simTime - i < (currentMax - currGeodes - 3)) {
           // System.out.println("Using");
           continue;
-        }
-        if (currGeodes > 0) {
-          System.out.println(currGeodes);
         }
 
         // Generate the new factories based on this

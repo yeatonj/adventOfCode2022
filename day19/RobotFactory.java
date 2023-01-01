@@ -3,6 +3,7 @@
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.ArrayList;
 
 class RobotFactory {
   // Instance variables
@@ -231,5 +232,103 @@ class RobotFactory {
     returnString += "Each ore robot costs " + this.oreRobotCost + " ore. Each clay robot costs " + this.clayRobotCost + " ore. Each obsidian robot costs " + this.obsidianRobotCost[0] + " ore and " + this.obsidianRobotCost[1] + " clay. Each geode robot costs " + this.geodeRobotCost[0] + " ore and " + this.geodeRobotCost[1] + " obsidian.";
     return returnString;
   }
+
+  // Method to get a loose estimate of the possible number of geodes given a
+  // particular factory state
+  public int getUpperGeodeBound(int maxTime) {
+    int remainingTime = maxTime - this.currentTime;
+    // First, find the maximum number of ore robots we can have at any remaining step
+    int currentOreRobots = this.numRobots[0];
+    int currentOre = this.totalResources[0];
+    ArrayList<Integer> maxOreRobots = new ArrayList<>();
+    for (int i = 0; i < remainingTime; i++) {
+      // Find how much ore we generated
+      int generatedOre = currentOreRobots;
+      // If we can build an ore Robot, build it
+      if (currentOre >= this.oreRobotCost) {
+        currentOreRobots++;
+        currentOre -= this.oreRobotCost;
+      }
+      maxOreRobots.add(currentOreRobots);
+      currentOre += generatedOre;
+    }
+    // Now, we have the maximum number of ore robots at each step - find the max
+    // amount of ore we can have at each step
+    ArrayList<Integer> maxOre = new ArrayList<>();
+    maxOre.add(this.totalResources[0] + this.numRobots[0]);
+    for (int i = 1; i < remainingTime; i++) {
+      maxOre.add(maxOre.get(i-1) + maxOreRobots.get(i-1));
+    }
+    // Second, find the maximum number of clay robots we can have at any stage,
+    // and use that to determine the maximum amount of clay we can have at
+    // any stage
+    int currentClayRobots = this.numRobots[1];
+    int currentOreSpent = 0;
+    ArrayList<Integer> maxClay = new ArrayList<>();
+    maxClay.add(this.totalResources[1] + currentClayRobots);
+    if (maxOre.get(0) >= this.clayRobotCost) {
+      currentOreSpent += this.clayRobotCost;
+      currentClayRobots++;
+    }
+    for (int i = 1; i < remainingTime; i++) {
+      maxClay.add(maxClay.get(i-1) + currentClayRobots);
+      if (maxOre.get(i) >= (this.clayRobotCost + currentOreSpent)) {
+        currentOreSpent += this.clayRobotCost;
+        currentClayRobots++;
+      }
+      System.out.println("Clay: " + maxClay.get(i));
+      System.out.println("Ore: " + maxOre.get(i));
+    }
+
+    // Third, find the maximum number of obsidian robots we can have at any stage,
+    // and use that to determine the maximum amount of obsidian we can have at
+    // any stage
+    int currentObsRobots = this.numRobots[2];
+    currentOreSpent = 0;
+    int currentClaySpent = 0;
+    ArrayList<Integer> maxObs = new ArrayList<>();
+    maxObs.add(this.totalResources[2] + currentObsRobots);
+    if (maxOre.get(0) >= this.obsidianRobotCost[0] &&
+        maxClay.get(0) >= this.obsidianRobotCost[1]) {
+      currentOreSpent += this.obsidianRobotCost[0];
+      currentClaySpent += this.obsidianRobotCost[1];
+      currentObsRobots++;
+    }
+    for (int i = 1; i < remainingTime; i++) {
+      maxObs.add(maxObs.get(i-1) + currentObsRobots);
+      if (maxOre.get(i) >= (this.obsidianRobotCost[0] + currentOreSpent) &&
+          maxClay.get(i) >= (this.obsidianRobotCost[1] + currentClaySpent)) {
+        currentOreSpent += this.obsidianRobotCost[0];
+        currentClaySpent += this.obsidianRobotCost[1];
+        currentObsRobots++;
+      }
+      System.out.println("Max Obsidian: " + maxObs.get(i));
+    }
+
+    // And, finally, do the same for geode robots
+    int currentGeodeRobots = this.numRobots[3];
+    currentOreSpent = 0;
+    int currentObsSpent = 0;
+    ArrayList<Integer> maxGeode = new ArrayList<>();
+    maxGeode.add(this.totalResources[3] + currentGeodeRobots);
+    if (maxOre.get(0) >= this.geodeRobotCost[0] &&
+        maxObs.get(0) >= this.geodeRobotCost[1]) {
+      currentOreSpent += this.geodeRobotCost[0];
+      currentObsSpent += this.geodeRobotCost[1];
+      currentGeodeRobots++;
+    }
+    for (int i = 1; i < remainingTime; i++) {
+      maxGeode.add(maxGeode.get(i-1) + currentGeodeRobots);
+      if (maxOre.get(i) >= (this.geodeRobotCost[0] + currentOreSpent) &&
+          maxObs.get(i) >= (this.geodeRobotCost[1] + currentObsSpent)) {
+        currentOreSpent += this.geodeRobotCost[0];
+        currentObsSpent += this.geodeRobotCost[1];
+        currentGeodeRobots++;
+      }
+      System.out.println(i + ": Max Geode: " + maxGeode.get(i));
+    }
+    return maxGeode.get(maxGeode.size()-1);
+  }
+
 
 }
