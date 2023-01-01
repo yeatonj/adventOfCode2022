@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.ArrayList;
 
-class RobotFactory {
+class RobotFactory implements Comparable<RobotFactory> {
   // Instance variables
   int oreRobotCost; // cost of an ore robot, in ore
   int clayRobotCost; // cost of a clay robot, in ore
@@ -14,7 +14,8 @@ class RobotFactory {
   Integer[] numRobots; // ore, clay, obsidian, geode
   int[] totalResources; // ore, clay, obsidian, geode
   int currentTime; // time elapsed since factory created
-  int maxOreCost;
+  int maxOreCost; // Max possible cost of an ore consuming robot blueprint
+  int maxPossGeodes; // max possible geodes for this factory config
 
   // Constructor for use in initializing factory
   RobotFactory(int oreCost, int clayCost, int[] obsidianCost, int[] geodeCost) {
@@ -38,6 +39,7 @@ class RobotFactory {
     // Initialize starting resources
     this.totalResources = new int[] {0,0,0,0};
     this.currentTime = 0;
+    this.maxPossGeodes = 0;
   }
 
   // Constructor for creating a new instance of a factory that is a copy of the parent
@@ -59,6 +61,7 @@ class RobotFactory {
                                     parentFactory.getTotalGeode()};
     this.currentTime = parentFactory.getCurrentTime();
     this.maxOreCost = parentFactory.getMaxOreCost();
+    this.maxPossGeodes = 0;
   }
 
   // Getters for robot costs
@@ -132,6 +135,10 @@ class RobotFactory {
   // Gets the difference between the most and least number of each robot
   public int getMinRobots() {
     return Collections.min(Arrays.asList(numRobots));
+  }
+
+  public int getMaxPossGeodes() {
+    return this.maxPossGeodes;
   }
 
   // Function for creating a new instance of a factory from this one with a single timestep
@@ -237,6 +244,9 @@ class RobotFactory {
   // particular factory state
   public int getUpperGeodeBound(int maxTime) {
     int remainingTime = maxTime - this.currentTime;
+    if (remainingTime == -1) {
+      return this.totalResources[3];
+    }
     // First, find the maximum number of ore robots we can have at any remaining step
     int currentOreRobots = this.numRobots[0];
     int currentOre = this.totalResources[0];
@@ -276,8 +286,8 @@ class RobotFactory {
         currentOreSpent += this.clayRobotCost;
         currentClayRobots++;
       }
-      System.out.println("Clay: " + maxClay.get(i));
-      System.out.println("Ore: " + maxOre.get(i));
+      // System.out.println("Clay: " + maxClay.get(i));
+      // System.out.println("Ore: " + maxOre.get(i));
     }
 
     // Third, find the maximum number of obsidian robots we can have at any stage,
@@ -302,7 +312,7 @@ class RobotFactory {
         currentClaySpent += this.obsidianRobotCost[1];
         currentObsRobots++;
       }
-      System.out.println("Max Obsidian: " + maxObs.get(i));
+      // System.out.println("Max Obsidian: " + maxObs.get(i));
     }
 
     // And, finally, do the same for geode robots
@@ -325,10 +335,19 @@ class RobotFactory {
         currentObsSpent += this.geodeRobotCost[1];
         currentGeodeRobots++;
       }
-      System.out.println(i + ": Max Geode: " + maxGeode.get(i));
+      // System.out.println(i + ": Max Geode: " + maxGeode.get(i));
     }
-    return maxGeode.get(maxGeode.size()-1);
+    this.maxPossGeodes = maxGeode.get(maxGeode.size()-1);
+    if (remainingTime == 0) {
+      this.maxPossGeodes = this.totalResources[3];
+    }
+    return this.maxPossGeodes;
   }
 
+  public int compareTo(RobotFactory b) {
+    // System.out.println("Comparing this: " + this.distToDest + " to: " + b.getDist());
+    // System.out.println("Returning: " + (this.distToDest - b.getDist()));
+    return b.getMaxPossGeodes() -this.maxPossGeodes;
+  }
 
 }
