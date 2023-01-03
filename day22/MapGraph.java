@@ -171,7 +171,7 @@ class MapGraph {
       newTile = currentTile.getRightTile();
     }
     if (newTile == null) {
-      System.out.println("Could not move, hit a wall");
+      // System.out.println("Could not move, hit a wall");
       return false;
     }
     // Finish the character move and note that it was acceptable

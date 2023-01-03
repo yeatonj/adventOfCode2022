@@ -171,7 +171,7 @@ class CubeMapGraph {
     newCharacter.setMap(this);
     this.characterX.add(this.startingX);
     this.characterY.add(this.startingY);
-    System.out.println("Created a new character at x = " + (this.startingX + 1) + ", y = " + (this.startingY + 1) + ".");
+    // System.out.println("Created a new character at x = " + (this.startingX + 1) + ", y = " + (this.startingY + 1) + ".");
   }
 
   // Method to move a character
@@ -180,6 +180,7 @@ class CubeMapGraph {
     int currentX = characterX.get(charIndex);
     int currentY = characterY.get(charIndex);
     OpenTile currentTile = (OpenTile) this.mapCoords.get(currentY).get(currentX);
+    int currentZone = currentTile.getcubeZone();
     MapTile newTile = null;
     if (direction == 'u') {
       newTile = currentTile.getUpTile();
@@ -191,9 +192,10 @@ class CubeMapGraph {
       newTile = currentTile.getRightTile();
     }
     if (newTile == null) {
-      System.out.println("Could not move, hit a wall");
+      // System.out.println("Could not move, hit a wall");
       return false;
     }
+    int newZone = newTile.getcubeZone();
     // Finish the character move and note that it was acceptable
     this.characterX.set(charIndex, newTile.getX());
     this.characterY.set(charIndex, newTile.getY());
@@ -205,5 +207,52 @@ class CubeMapGraph {
     int currentX = characterX.get(charIndex) + 1;
     int currentY = characterY.get(charIndex) + 1;
     return new int[] {currentX, currentY};
+  }
+
+  // Turns the character so it is facing the appropriate direction as it
+  // transitions between zones
+  private void cubeMoveRotations(CubeMapCharacter currCharacter, int zone1, int zone2) {
+    if (zone1 == 1) {
+      if (zone2 == 5) {
+        currCharacter.turnRight();
+        currCharacter.turnRight();
+      } else if (zone2 == 6) {
+        currCharacter.turnRight();
+      }
+    } else if (zone1 == 2) {
+      if (zone2 == 4) {
+        currCharacter.turnRight();
+        currCharacter.turnRight();
+      } else if (zone2 == 3) {
+        currCharacter.turnRight();
+      }
+    } else if (zone1 == 3) {
+      if (zone2 == 2) {
+        currCharacter.turnLeft();
+      } else if (zone2 == 5) {
+        currCharacter.turnLeft();
+      }
+    } else if (zone1 == 4) {
+      if (zone2 == 2) {
+        currCharacter.turnRight();
+        currCharacter.turnRight();
+      } else if (zone2 == 6) {
+        currCharacter.turnRight();
+      }
+    } else if (zone1 == 5) {
+      if (zone2 == 1) {
+        currCharacter.turnRight();
+        currCharacter.turnRight();
+      } else if (zone2 == 3) {
+        currCharacter.turnRight();
+      }
+
+    } else if (zone1 == 6) {
+      if (zone2 == 4) {
+        currCharacter.turnLeft();
+      } else if (zone2 == 1) {
+        currCharacter.turnLeft();
+      }
+    }
   }
 }

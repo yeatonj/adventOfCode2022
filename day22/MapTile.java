@@ -6,4 +6,6 @@ abstract class MapTile {
   abstract public int getX();
 
   abstract public int getY();
+
+  abstract public int getcubeZone();
 }

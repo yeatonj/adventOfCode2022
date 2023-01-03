@@ -113,16 +113,16 @@ class MonkeyMap {
     instructions.add(directions.substring(currInstChar));
     for (String instruction : instructions) {
       if (instruction.equals("L")) {
-        System.out.println("Turning Left");
+        // System.out.println("Turning Left");
         characterIn.turnLeft();
       } else if (instruction.equals("R")) {
-        System.out.println("Turning Right");
+        // System.out.println("Turning Right");
         characterIn.turnRight();
       } else {
         int moveAmount = Integer.parseInt(instruction);
         while (moveAmount > 0) {
           int[] currLoc = characterIn.charLocation();
-          System.out.println("Moving character from (" + currLoc[0] +", " + currLoc[1] + ")");
+          // System.out.println("Moving character from (" + currLoc[0] +", " + currLoc[1] + ")");
           characterIn.moveCharacter();
           moveAmount--;
         }

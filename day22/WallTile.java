@@ -25,6 +25,10 @@ public class WallTile extends MapTile {
     return this.tileX;
   }
 
+  public int getcubeZone() {
+    return this.cubeZone;
+  }
+
   public int getY() {
     return this.tileY;
   }
