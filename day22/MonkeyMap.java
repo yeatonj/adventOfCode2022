@@ -6,14 +6,15 @@
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
+import java.util.ArrayList;
 
 class MonkeyMap {
   public static void main(String[] args) throws FileNotFoundException {
     // Read the input data and create two strings - one of the map, one of the
     // character instructions
 
-    // String filePath = "/Users/yeato/Documents/git_projects/adventOfCode2022/day22/data.txt";
-    String filePath = "/Users/yeato/Documents/git_projects/adventOfCode2022/day22/data_test.txt";
+    String filePath = "/Users/yeato/Documents/git_projects/adventOfCode2022/day22/data.txt";
+    // String filePath = "/Users/yeato/Documents/git_projects/adventOfCode2022/day22/data_test.txt";
 
     File dataFile = new File(filePath);
     Scanner dataScanner = new Scanner(dataFile);
@@ -30,16 +31,51 @@ class MonkeyMap {
 
     // Now, generate the map
     MapGraph partOneMap = new MapGraph(splitOutput[0], '#', '.', ' ');
-
     partOneMap.printMap();
-
     // Add the character to the map
     MapCharacter human = new MapCharacter(0);
     partOneMap.addCharacter(human);
 
-    // Double check the location
-    int[] locCheck = human.charLocation();
-    System.out.println("Character at (" + locCheck[0] + ", " + locCheck[1] + ")");
-    System.out.println("Direction: " + human.getDirection());
+    // And give the character directions
+    giveDirections(splitOutput[1], human);
+
+    // Then calculate the code
+    int finalCol = human.charLocation()[0];
+    int finalRow = human.charLocation()[1];
+    int finalDir = human.getDirection();
+    int code = 1000 * finalRow + 4 * finalCol + finalDir;
+    System.out.println("Code is: " + code);
+  }
+
+  public static void giveDirections(String directions, MapCharacter characterIn) {
+    // First, parse the input
+    ArrayList<String> instructions = new ArrayList<>();
+    int currInstChar = 0;
+    for (int i = 0; i < directions.length(); i++) {
+      char currChar = directions.charAt(i);
+      if (currChar == 'L' || currChar == 'R') {
+        instructions.add(directions.substring(currInstChar, i));
+        instructions.add(Character.toString(currChar));
+        currInstChar = i + 1;
+      }
+    }
+    instructions.add(directions.substring(currInstChar));
+    for (String instruction : instructions) {
+      if (instruction.equals("L")) {
+        System.out.println("Turning Left");
+        characterIn.turnLeft();
+      } else if (instruction.equals("R")) {
+        System.out.println("Turning Right");
+        characterIn.turnRight();
+      } else {
+        int moveAmount = Integer.parseInt(instruction);
+        while (moveAmount > 0) {
+          int[] currLoc = characterIn.charLocation();
+          System.out.println("Moving character from (" + currLoc[0] +", " + currLoc[1] + ")");
+          characterIn.moveCharacter();
+          moveAmount--;
+        }
+      }
+    }
   }
 }

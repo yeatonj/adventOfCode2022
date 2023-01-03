@@ -2,16 +2,28 @@ public class OpenTile extends MapTile {
   // Instance variables
   public char tileChar;
   public MapTile[] adjTiles; // R, D, L, U
+  public int tileX;
+  public int tileY;
 
   // Constructor
-  OpenTile(char drawCharacter) {
+  OpenTile(char drawCharacter, int tileX, int tileY) {
     this.tileChar = drawCharacter;
+    this.tileX = tileX;
+    this.tileY = tileY;
     this.adjTiles = new MapTile[4];
   }
 
   // Getter for the character (for drawing the map)
   public char getChar() {
     return this.tileChar;
+  }
+
+  public int getX() {
+    return this.tileX;
+  }
+
+  public int getY() {
+    return this.tileY;
   }
 
   // Getters for adjacent tiles

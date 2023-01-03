@@ -2,4 +2,8 @@
 
 abstract class MapTile {
   abstract public char getChar();
+
+  abstract public int getX();
+
+  abstract public int getY();
 }

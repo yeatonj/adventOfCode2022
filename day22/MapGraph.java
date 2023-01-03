@@ -34,6 +34,7 @@ class MapGraph {
     }
 
     // For each line in the map
+    int row = 0;
     for (String dataLine : splitData) {
       // Create an array with the corresponding tiles
       ArrayList<MapTile> lineTiles = new ArrayList<>();
@@ -42,9 +43,9 @@ class MapGraph {
           char currChar = dataLine.charAt(i);
           // Add the corresponding tile (null, if empty);
           if (currChar == wallChar) {
-            lineTiles.add(new WallTile(currChar));
+            lineTiles.add(new WallTile(currChar, i, row));
           } else if (currChar == openChar) {
-            lineTiles.add(new OpenTile(currChar));
+            lineTiles.add(new OpenTile(currChar, i, row));
           } else {
             lineTiles.add(null);
           }
@@ -53,6 +54,7 @@ class MapGraph {
         }
       }
       this.mapCoords.add(lineTiles);
+      row++;
     }
     // Set the map size and starting x coordinate (first actual point on top line)
     this.sizeY = this.mapCoords.size();
@@ -161,30 +163,20 @@ class MapGraph {
     MapTile newTile = null;
     if (direction == 'u') {
       newTile = currentTile.getUpTile();
-      currentY -= 1;
-      if (currentY < 0) {
-        currentY += sizeY;
-      }
     } else if (direction == 'd') {
       newTile = currentTile.getDownTile();
-      currentY = (currentY + 1) % this.sizeY;
     } else if (direction == 'l') {
       newTile = currentTile.getLeftTile();
-      currentX -= 1;
-      if (currentX < 0) {
-        currentX += sizeX;
-      }
     } else {
       newTile = currentTile.getRightTile();
-      currentX = (currentX + 1) % sizeX;
     }
     if (newTile == null) {
       System.out.println("Could not move, hit a wall");
       return false;
     }
     // Finish the character move and note that it was acceptable
-    this.characterX.set(charIndex, currentX);
-    this.characterY.set(charIndex, currentY);
+    this.characterX.set(charIndex, newTile.getX());
+    this.characterY.set(charIndex, newTile.getY());
     return true;
   }
 
