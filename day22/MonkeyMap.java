@@ -45,9 +45,60 @@ class MonkeyMap {
     int finalDir = human.getDirection();
     int code = 1000 * finalRow + 4 * finalCol + finalDir;
     System.out.println("Code is: " + code);
+
+    // Now for part 2:
+    CubeMapGraph partTwoMap = new CubeMapGraph(splitOutput[0], '#', '.', ' ');
+    partTwoMap.printMap();
+    // Add the character to the map
+    CubeMapCharacter humanTwo = new CubeMapCharacter(0);
+    partTwoMap.addCharacter(humanTwo);
+
+    // And give the character directions
+    giveCubeDirections(splitOutput[1], humanTwo);
+
+    // Then calculate the code
+    finalCol = humanTwo.charLocation()[0];
+    finalRow = humanTwo.charLocation()[1];
+    finalDir = humanTwo.getDirection();
+    code = 1000 * finalRow + 4 * finalCol + finalDir;
+    System.out.println("Code is: " + code);
   }
 
   public static void giveDirections(String directions, MapCharacter characterIn) {
+    // First, parse the input
+    ArrayList<String> instructions = new ArrayList<>();
+    int currInstChar = 0;
+    for (int i = 0; i < directions.length(); i++) {
+      char currChar = directions.charAt(i);
+      if (currChar == 'L' || currChar == 'R') {
+        instructions.add(directions.substring(currInstChar, i));
+        instructions.add(Character.toString(currChar));
+        currInstChar = i + 1;
+      }
+    }
+    instructions.add(directions.substring(currInstChar));
+    for (String instruction : instructions) {
+      if (instruction.equals("L")) {
+        System.out.println("Turning Left");
+        characterIn.turnLeft();
+      } else if (instruction.equals("R")) {
+        System.out.println("Turning Right");
+        characterIn.turnRight();
+      } else {
+        int moveAmount = Integer.parseInt(instruction);
+        while (moveAmount > 0) {
+          int[] currLoc = characterIn.charLocation();
+          System.out.println("Moving character from (" + currLoc[0] +", " + currLoc[1] + ")");
+          characterIn.moveCharacter();
+          moveAmount--;
+        }
+      }
+    }
+  }
+
+
+  // Function for giving directions on a cube
+  public static void giveCubeDirections(String directions, CubeMapCharacter characterIn) {
     // First, parse the input
     ArrayList<String> instructions = new ArrayList<>();
     int currInstChar = 0;

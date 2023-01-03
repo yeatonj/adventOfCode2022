@@ -1,13 +1,20 @@
 public class WallTile extends MapTile {
   // Instance variables
-  public char tileChar;
-  public int tileX;
-  public int tileY;
+  private char tileChar;
+  private int tileX;
+  private int tileY;
+  private int cubeZone;
 
   WallTile(char drawCharacter, int tileX, int tileY) {
     this.tileChar = drawCharacter;
     this.tileX = tileX;
     this.tileY = tileY;
+    this.cubeZone = 0;
+  }
+
+  WallTile(char drawCharacter, int tileX, int tileY, int cubeZone) {
+    this(drawCharacter, tileX, tileY);
+    this.cubeZone = cubeZone;
   }
 
   public char getChar() {

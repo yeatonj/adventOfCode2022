@@ -1,9 +1,10 @@
 public class OpenTile extends MapTile {
   // Instance variables
-  public char tileChar;
-  public MapTile[] adjTiles; // R, D, L, U
-  public int tileX;
-  public int tileY;
+  private char tileChar;
+  private MapTile[] adjTiles; // R, D, L, U
+  private int tileX;
+  private int tileY;
+  private int cubeZone;
 
   // Constructor
   OpenTile(char drawCharacter, int tileX, int tileY) {
@@ -11,6 +12,11 @@ public class OpenTile extends MapTile {
     this.tileX = tileX;
     this.tileY = tileY;
     this.adjTiles = new MapTile[4];
+    this.cubeZone = 0;
+  }
+  OpenTile(char drawCharacter, int tileX, int tileY, int cubeZone) {
+    this(drawCharacter, tileX, tileY);
+    this.cubeZone = cubeZone;
   }
 
   // Getter for the character (for drawing the map)
@@ -24,6 +30,10 @@ public class OpenTile extends MapTile {
 
   public int getY() {
     return this.tileY;
+  }
+
+  public int getcubeZone() {
+    return this.cubeZone;
   }
 
   // Getters for adjacent tiles
