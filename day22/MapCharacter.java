@@ -55,10 +55,26 @@ public class MapCharacter {
     // Poll the map to determine if the appropriate square is open. If it is,
     // complete the move by updating the character position in the map. If not,
     // prevent the move in the map, then return false
+    if (this.currentMap == null) {
+      System.out.println("Can't move character, not on a map");
+      return false;
+    }
+    char direction = 'r';
+    if (direction == 1) {
+      direction = 'd';
+    } else if (direction == 2) {
+      direction = 'l';
+    } else if (direction == 3) {
+      direction = 'u';
+    }
+    return this.currentMap.moveCharacter(this, direction);
 
     // Could also generate a "path" as the character leaves the space?
+  }
 
-    return false;
+  // Returns an [x,y] array with the location of the character
+  public int[] charLocation() {
+    return this.currentMap.characterLocation(this);
   }
 
 

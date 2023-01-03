@@ -7,6 +7,8 @@ class MapGraph {
   private ArrayList<ArrayList<MapTile>> mapCoords;
   // This holds the characters (players) in the map
   private ArrayList<MapCharacter> mapCharacters;
+  private ArrayList<Integer> characterX;
+  private ArrayList<Integer> characterY;
   // Starting x and y position for characters
   private int startingX;
   private int startingY;
@@ -18,7 +20,9 @@ class MapGraph {
   MapGraph(String mapData, char wallChar, char openChar, char emptyChar) {
     this.mapCharacters = new ArrayList<>();
     this.mapCoords = new ArrayList<>();
-    this.startingY = 1; // indexed to 1
+    this.characterX = new ArrayList<>();
+    this.characterY = new ArrayList<>();
+    this.startingY = 0;
     this.emptyChar = emptyChar;
     String[] splitData = mapData.split("\n");
     // Find the longest line
@@ -54,7 +58,8 @@ class MapGraph {
     this.sizeY = this.mapCoords.size();
     for (int i = 0; i < this.sizeX; i++) {
       if (this.mapCoords.get(0).get(i) != null) {
-        this.startingX = i + 1;
+        this.startingX = i;
+        break;
       }
     }
 
@@ -121,6 +126,8 @@ class MapGraph {
 
 
   // Other methods
+
+  // Method to print the map
   public void printMap() {
     for (int i = 0; i < this.sizeY; i++) {
       for (int j = 0; j < this.sizeX; j++) {
@@ -132,5 +139,59 @@ class MapGraph {
       }
       System.out.print("\n");
     }
+  }
+
+  // Method to add a character to the map
+  // Remember that character x y coords are indexed to 1 greater than the row/col
+  // array that they are in (ie, a character at 1,1 would be at node 0,0)
+  public void addCharacter(MapCharacter newCharacter) {
+    this.mapCharacters.add(newCharacter);
+    newCharacter.setMap(this);
+    this.characterX.add(this.startingX);
+    this.characterY.add(this.startingY);
+    System.out.println("Created a new character at x = " + (this.startingX + 1) + ", y = " + (this.startingY + 1) + ".");
+  }
+
+  // Method to move a character
+  public boolean moveCharacter(MapCharacter currCharacter, char direction) {
+    int charIndex = this.mapCharacters.indexOf(currCharacter);
+    int currentX = characterX.get(charIndex);
+    int currentY = characterY.get(charIndex);
+    OpenTile currentTile = (OpenTile) this.mapCoords.get(currentY).get(currentX);
+    MapTile newTile = null;
+    if (direction == 'u') {
+      newTile = currentTile.getUpTile();
+      currentY -= 1;
+      if (currentY < 0) {
+        currentY += sizeY;
+      }
+    } else if (direction == 'd') {
+      newTile = currentTile.getDownTile();
+      currentY = (currentY + 1) % this.sizeY;
+    } else if (direction == 'l') {
+      newTile = currentTile.getLeftTile();
+      currentX -= 1;
+      if (currentX < 0) {
+        currentX += sizeX;
+      }
+    } else {
+      newTile = currentTile.getRightTile();
+      currentX = (currentX + 1) % sizeX;
+    }
+    if (newTile == null) {
+      System.out.println("Could not move, hit a wall");
+      return false;
+    }
+    // Finish the character move and note that it was acceptable
+    this.characterX.set(charIndex, currentX);
+    this.characterX.set(charIndex, currentY);
+    return true;
+  }
+
+  public int[] characterLocation(MapCharacter currCharacter) {
+    int charIndex = this.mapCharacters.indexOf(currCharacter);
+    int currentX = characterX.get(charIndex) + 1;
+    int currentY = characterY.get(charIndex) + 1;
+    return new int[] {currentX, currentY};
   }
 }
