@@ -1,12 +1,12 @@
-public class openTile extends mapTile {
+public class OpenTile extends MapTile {
   // Instance variables
   public char tileChar;
-  public mapTile[] adjTiles; // R, D, L, U
+  public MapTile[] adjTiles; // R, D, L, U
 
   // Constructor
-  openTile(char drawCharacter) {
+  OpenTile(char drawCharacter) {
     this.tileChar = drawCharacter;
-    this.adjTiles = new mapTile[4];
+    this.adjTiles = new MapTile[4];
   }
 
   // Getter for the character (for drawing the map)
@@ -15,36 +15,36 @@ public class openTile extends mapTile {
   }
 
   // Getters for adjacent tiles
-  public mapTile getRightTile() {
+  public MapTile getRightTile() {
     return this.adjTiles[0];
   }
 
-  public mapTile getDownTile() {
+  public MapTile getDownTile() {
     return this.adjTiles[1];
   }
 
-  public mapTile getLeftTile() {
+  public MapTile getLeftTile() {
     return this.adjTiles[2];
   }
 
-  public mapTile getUpTile() {
+  public MapTile getUpTile() {
     return this.adjTiles[3];
   }
 
   // Setter for adjacent tiles
-  public void setRightTile(mapTile rightTile) {
+  public void setRightTile(MapTile rightTile) {
     this.adjTiles[0] = rightTile;
   }
 
-  public void setDownTile(mapTile downTile) {
+  public void setDownTile(MapTile downTile) {
     this.adjTiles[1] = downTile;
   }
 
-  public void setLeftTile(mapTile leftTile) {
+  public void setLeftTile(MapTile leftTile) {
     this.adjTiles[2] = leftTile;
   }
 
-  public void setUpTile(mapTile upTile) {
+  public void setUpTile(MapTile upTile) {
     this.adjTiles[3] = upTile;
   }
 }

@@ -1,8 +1,8 @@
-public class wallTile extends mapTile {
+public class WallTile extends MapTile {
   // Instance variables
   public char tileChar;
 
-  wallTile(char drawCharacter) {
+  WallTile(char drawCharacter) {
     this.tileChar = drawCharacter;
   }
 
