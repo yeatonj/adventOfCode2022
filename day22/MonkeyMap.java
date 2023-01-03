@@ -12,8 +12,8 @@ class MonkeyMap {
     // Read the input data and create two strings - one of the map, one of the
     // character instructions
 
-    String filePath = "/Users/yeato/Documents/git_projects/adventOfCode2022/day22/data.txt";
-    // String filePath = "/Users/yeato/Documents/git_projects/adventOfCode2022/day22/data_test.txt";
+    // String filePath = "/Users/yeato/Documents/git_projects/adventOfCode2022/day22/data.txt";
+    String filePath = "/Users/yeato/Documents/git_projects/adventOfCode2022/day22/data_test.txt";
 
     File dataFile = new File(filePath);
     Scanner dataScanner = new Scanner(dataFile);
@@ -28,7 +28,9 @@ class MonkeyMap {
     String[] splitOutput = output.split("\n\n");
     splitOutput[1] = splitOutput[1].substring(0, splitOutput[1].length() - 1);
 
-    System.out.println(splitOutput[0]);
+    // Now, generate the map
+    MapGraph partOneMap = new MapGraph(splitOutput[0], '#', '.', ' ');
 
+    partOneMap.printMap();
   }
 }
