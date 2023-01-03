@@ -184,7 +184,7 @@ class MapGraph {
     }
     // Finish the character move and note that it was acceptable
     this.characterX.set(charIndex, currentX);
-    this.characterX.set(charIndex, currentY);
+    this.characterY.set(charIndex, currentY);
     return true;
   }
 

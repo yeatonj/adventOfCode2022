@@ -41,13 +41,5 @@ class MonkeyMap {
     int[] locCheck = human.charLocation();
     System.out.println("Character at (" + locCheck[0] + ", " + locCheck[1] + ")");
     System.out.println("Direction: " + human.getDirection());
-
-    human.moveCharacter();
-    locCheck = human.charLocation();
-    System.out.println("Character at (" + locCheck[0] + ", " + locCheck[1] + ")");
-    
-    human.moveCharacter();
-    locCheck = human.charLocation();
-    System.out.println("Character at (" + locCheck[0] + ", " + locCheck[1] + ")");
   }
 }

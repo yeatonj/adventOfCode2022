@@ -59,15 +59,15 @@ public class MapCharacter {
       System.out.println("Can't move character, not on a map");
       return false;
     }
-    char direction = 'r';
-    if (direction == 1) {
-      direction = 'd';
-    } else if (direction == 2) {
-      direction = 'l';
-    } else if (direction == 3) {
-      direction = 'u';
+    char charDirec = 'r';
+    if (this.direction == 1) {
+      charDirec = 'd';
+    } else if (this.direction == 2) {
+      charDirec = 'l';
+    } else if (this.direction == 3) {
+      charDirec = 'u';
     }
-    return this.currentMap.moveCharacter(this, direction);
+    return this.currentMap.moveCharacter(this, charDirec);
 
     // Could also generate a "path" as the character leaves the space?
   }
