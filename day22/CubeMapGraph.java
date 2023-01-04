@@ -179,7 +179,7 @@ class CubeMapGraph {
     // Fix 3-5 and 5-3 (top on 5, left on 3)
     for (int i = 50; i < 100; i++) {
       MapTile tile3 = mapCoords.get(i).get(50);
-      MapTile tile5 = mapCoords.get(100).get(100-i);
+      MapTile tile5 = mapCoords.get(100).get(i-50);
       tile3.setLeftTile(tile5);
       tile5.setUpTile(tile3);
     }
