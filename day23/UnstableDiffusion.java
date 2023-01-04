@@ -43,10 +43,13 @@ class UnstableDiffusion {
     System.out.println("Initial Map: ");
     drawMap(elfToPoint, pointToElf);
 
-    // Simulate the moves of the elves
+    // Part 1 - uncomment these two lines to complete
     int emptyTiles = simulateMoves(elfToPoint, pointToElf, 10);
-
     System.out.println("Number of empty tiles is: " + emptyTiles);
+
+    // Part 2 - uncomment these two lines to complete
+    int firstRoundNoMoves = findFinalRest(elfToPoint, pointToElf);
+    System.out.println("Numer of rounds to final resting is: " + firstRoundNoMoves);
   }
 
   // Method to simulate moves
@@ -127,6 +130,90 @@ class UnstableDiffusion {
     }
     // Calculate the coverage area
     return calculateArea(elfToPoint);
+  }
+
+
+  // Method to simulate moves
+  public static int findFinalRest(HashMap<String, Point> elfToPoint, HashMap<Point, String> pointToElf) {
+    String checkRotation = "NSWE";
+    int currentFirstCheck = 0;
+    boolean noMove = false;
+    while (!noMove){
+      noMove = true;
+      // Create a map of proposed and duplicate moves
+      HashMap<Point, String> proposedMoves = new HashMap<>();
+      HashSet<Point> duplicateMoves = new HashSet<>();
+      HashSet<String> duplicateElves = new HashSet<>();
+      // Now, iterate through each elf and determine its move
+      for (HashMap.Entry<String,Point> mapElement : elfToPoint.entrySet()) {
+        // first, check to see if all points around this elf are clear
+        if (checkAdjPoints(mapElement.getValue(), pointToElf)) {
+          // if they are, keep the elf here
+          proposedMoves.put(mapElement.getValue(), mapElement.getKey());
+          continue;
+        }
+        noMove = false;
+        boolean moveFound = false;
+        int counter = 0;
+        while(!moveFound && counter < 4) {
+          char checkDirection = checkRotation.charAt((currentFirstCheck + counter) % 4);
+          if (checkDirection == 'N') {
+            moveFound = checkNorth(mapElement.getValue(), pointToElf);
+          } else if (checkDirection == 'S') {
+            moveFound = checkSouth(mapElement.getValue(), pointToElf);
+          } else if (checkDirection == 'W') {
+            moveFound = checkWest(mapElement.getValue(), pointToElf);
+          } else {
+            moveFound = checkEast(mapElement.getValue(), pointToElf);
+          }
+          // If a move is found, propose the move and check to see if it's acceptable
+          if (moveFound) {
+            Point proposedMove = proposeMove(mapElement.getValue(), checkDirection);
+            // Option 1 - this move has already been proposed by multiple elves - stay put!
+            if (duplicateMoves.contains(proposedMove)) {
+              duplicateElves.add(mapElement.getKey());
+            }
+            // Option 2 - this move has already been proposed by one elf - both stay put!
+            else if (proposedMoves.containsKey(proposedMove)) {
+              // Move the current elf into duplicates
+              duplicateMoves.add(proposedMove);
+              duplicateElves.add(mapElement.getKey());
+              // Move the other duplicate elf into duplicates
+              duplicateElves.add(proposedMoves.get(proposedMove));
+              // Remove the other duplicate elf from the proposed move
+              proposedMoves.remove(proposedMove);
+            }
+            // Option 3 - this move is brand new - record this proposed move
+            else {
+              proposedMoves.put(proposedMove, mapElement.getKey());
+            }
+          }
+          counter++;
+        }
+        // If a move is not found, leave the elf in the same place
+        if (!moveFound) {
+          proposedMoves.put(mapElement.getValue(), mapElement.getKey());
+        }
+      }
+      // Now, update the proposedMove HashMap with the elves that aren't moving
+      for (String elf : duplicateElves) {
+        proposedMoves.put(elfToPoint.get(elf), elf);
+      }
+      // The proposed moves list is now unique and complete, so create its inverse
+      HashMap<String,Point> proposedElves = new HashMap<>();
+      for (HashMap.Entry<Point,String> mapElement : proposedMoves.entrySet()) {
+        proposedElves.put(mapElement.getValue(), mapElement.getKey());
+      }
+      // Make the proposed maps into the original maps, then iterate
+      elfToPoint = proposedElves;
+      pointToElf = proposedMoves;
+      // System.out.println("Map after step " + (currentFirstCheck + 1));
+      // drawMap(elfToPoint, pointToElf);
+      // Iterate the checker
+      currentFirstCheck++;
+    }
+    // Calculate the coverage area
+    return currentFirstCheck;
   }
 
  // Method to propose a new point for an elf
