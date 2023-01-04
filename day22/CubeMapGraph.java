@@ -52,9 +52,9 @@ class CubeMapGraph {
           zone = 3;
         } else if (row < 150){
           if (i < 50) {
-            zone = 4;
-          } else {
             zone = 5;
+          } else {
+            zone = 4;
           }
         } else {
           zone = 6;
@@ -144,6 +144,61 @@ class CubeMapGraph {
         }
       }
     }
+    // At this point, nodes are fixed, but are not fixed correctly - flat surface fixed
+    // We need to connect 1-5, 1-6, 2-4, 2-3, 3-5, 4-6, 2-6, and vice versa
+    // Fix 1-5 and 5-1 (left on 1, left on 5)
+    for (int i = 0; i < 50; i++) {
+      MapTile tile1 = mapCoords.get(i).get(50);
+      MapTile tile5 = mapCoords.get(149-i).get(0);
+      tile1.setLeftTile(tile5);
+      tile5.setLeftTile(tile1);
+    }
+    // Fix 1-6 and 6-1 (top on 1, left on 6)
+    for (int i = 50; i < 100; i++) {
+      MapTile tile1 = mapCoords.get(0).get(i);
+      MapTile tile6 = mapCoords.get(100+i).get(0);
+      tile1.setUpTile(tile6);
+      tile6.setLeftTile(tile1);
+    }
+    // Fix 2-3 and 3-2 (bottom on 2, right on 3)
+    for (int i = 100; i < 150; i++) {
+      MapTile tile2 = mapCoords.get(49).get(i);
+      MapTile tile3 = mapCoords.get(i-50).get(99);
+      tile2.setDownTile(tile3);
+      tile3.setRightTile(tile2);
+    }
+
+    // Fix 2-4 and 4-2 (right on 2, right on 4)
+    for (int i = 0; i < 50; i++) {
+      MapTile tile2 = mapCoords.get(i).get(149);
+      MapTile tile4 = mapCoords.get(149-i).get(99);
+      tile2.setRightTile(tile4);
+      tile4.setRightTile(tile2);
+    }
+
+    // Fix 3-5 and 5-3 (top on 5, left on 3)
+    for (int i = 50; i < 100; i++) {
+      MapTile tile3 = mapCoords.get(i).get(50);
+      MapTile tile5 = mapCoords.get(100).get(100-i);
+      tile3.setLeftTile(tile5);
+      tile5.setUpTile(tile3);
+    }
+
+    // Fix 4-6 and 6-4 (bottom on 4, right on 6)
+    for (int i = 50; i < 100; i++) {
+      MapTile tile4 = mapCoords.get(149).get(i);
+      MapTile tile6 = mapCoords.get(100+i).get(49);
+      tile4.setDownTile(tile6);
+      tile6.setRightTile(tile4);
+    }
+
+    // Fix 2-6 and 6-2 (top on 2, bottom on 6)
+    for (int i = 100; i < 150; i++) {
+      MapTile tile2 = mapCoords.get(0).get(i);
+      MapTile tile6 = mapCoords.get(199).get(i-100);
+      tile2.setUpTile(tile6);
+      tile6.setDownTile(tile2);
+    }
   }
 
 
@@ -197,6 +252,8 @@ class CubeMapGraph {
     }
     int newZone = newTile.getcubeZone();
     // Finish the character move and note that it was acceptable
+    cubeMoveRotations(currCharacter, currentZone, newZone);
+    newTile.setDrawChar(currCharacter.getDirectionChar());
     this.characterX.set(charIndex, newTile.getX());
     this.characterY.set(charIndex, newTile.getY());
     return true;

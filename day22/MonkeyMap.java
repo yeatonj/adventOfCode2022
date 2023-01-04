@@ -62,6 +62,8 @@ class MonkeyMap {
     finalDir = humanTwo.getDirection();
     code = 1000 * finalRow + 4 * finalCol + finalDir;
     System.out.println("Code is: " + code);
+
+    // Answer of 44314 incorrect (too low)
   }
 
   public static void giveDirections(String directions, MapCharacter characterIn) {

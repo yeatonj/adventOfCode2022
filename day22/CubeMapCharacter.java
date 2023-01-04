@@ -30,6 +30,18 @@ public class CubeMapCharacter {
     return this.direction;
   }
 
+  public char getDirectionChar() {
+    if (this.direction == 0) {
+      return '>';
+    } else if (this.direction == 1) {
+      return 'v';
+    } else if (this.direction == 2) {
+      return '<';
+    } else {
+      return '^';
+    }
+  }
+
   // Setters
   // Setter for map
   public void setMap(CubeMapGraph newMap) {

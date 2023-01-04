@@ -32,4 +32,20 @@ public class WallTile extends MapTile {
   public int getY() {
     return this.tileY;
   }
+
+  public void setUpTile(MapTile upTile) {
+  };
+
+  public void setDownTile(MapTile downTile) {
+  };
+
+  public void setLeftTile(MapTile leftTile) {
+  };
+
+  public void setRightTile(MapTile rightTile) {
+  };
+
+  public void setDrawChar(char newChar) {
+    this.tileChar = newChar;
+  }
 }

@@ -55,18 +55,38 @@ public class OpenTile extends MapTile {
 
   // Setter for adjacent tiles
   public void setRightTile(MapTile rightTile) {
-    this.adjTiles[0] = rightTile;
+    if (rightTile instanceof OpenTile) {
+      this.adjTiles[0] = rightTile;
+    } else {
+      this.adjTiles[0] = null;
+    }
   }
 
   public void setDownTile(MapTile downTile) {
-    this.adjTiles[1] = downTile;
+    if (downTile instanceof OpenTile) {
+      this.adjTiles[1] = downTile;
+    } else {
+      this.adjTiles[1] = null;
+    }
   }
 
   public void setLeftTile(MapTile leftTile) {
-    this.adjTiles[2] = leftTile;
+    if (leftTile instanceof OpenTile) {
+      this.adjTiles[2] = leftTile;
+    } else {
+      this.adjTiles[2] = null;
+    }
   }
 
   public void setUpTile(MapTile upTile) {
-    this.adjTiles[3] = upTile;
+    if (upTile instanceof OpenTile) {
+      this.adjTiles[3] = upTile;
+    } else {
+      this.adjTiles[3] = null;
+    }
+  }
+
+  public void setDrawChar(char newChar) {
+    this.tileChar = newChar;
   }
 }
