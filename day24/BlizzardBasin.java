@@ -32,11 +32,10 @@ public class BlizzardBasin {
       fileString += (fileScanner.next() + "\n");
     }
     fileString = fileString.substring(0, fileString.length() - 1);
-    BlizzardMap partOneBlizzard = new BlizzardMap(fileString);
+    BlizzardMap initialBlizzard = new BlizzardMap(fileString);
 
-    partOneBlizzard.printMap();
+    initialBlizzard.printMap();
 
-    fileScanner.close();
 
 
   }
