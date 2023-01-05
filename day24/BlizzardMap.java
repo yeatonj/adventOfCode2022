@@ -11,6 +11,11 @@ public class BlizzardMap {
   // mapArray.get(y).get(x)
   // If it's empty, nothing is there, otherwise there is a blizzard there
   private ArrayList<ArrayList<ArrayList<String>>> mapArray;
+  // Below variables represent the origin and destination
+  private int originXLoc;
+  private int originYLoc;
+  private int destXLoc;
+  private int destYLoc;
 
   // Makes a new blizzardmap
   BlizzardMap(String blizzardData) {
@@ -28,11 +33,21 @@ public class BlizzardMap {
       }
       this.mapArray.add(arrayLine);
     }
+    this.originXLoc = 1;
+    this.originYLoc = 0;
+    this.destXLoc = this.mapArray.get(0).size() - 2;
+    this.destYLoc = this.mapArray.size() - 1;
+
   }
 
   // Makes a new map one timestep further into the future
   BlizzardMap(BlizzardMap prevMap) {
+    // Set carryover variables
     this.mapTime = prevMap.getMapTime() + 1;
+    this.originXLoc = prevMap.getOriginXLoc();
+    this.originYLoc = prevMap.getOriginYLoc();
+    this.destXLoc = prevMap.getDestXLoc();
+    this.destYLoc = prevMap.getDestYLoc();
     this.mapArray = new ArrayList<>();
     ArrayList<ArrayList<ArrayList<String>>> prevMapArray = prevMap.getMapArray();
     // Create the new empty map
@@ -114,6 +129,22 @@ public class BlizzardMap {
     return this.mapArray;
   }
 
+  public int getDestXLoc() {
+    return this.destXLoc;
+  }
+
+  public int getDestYLoc() {
+    return this.destYLoc;
+  }
+
+  public int getOriginXLoc() {
+    return this.originXLoc;
+  }
+
+  public int getOriginYLoc() {
+    return this.originYLoc;
+  }
+
 
 
   // Methods
@@ -133,10 +164,45 @@ public class BlizzardMap {
     }
   }
 
-  // This method returns valide nodes to move to given a current x and y coord.
+  // This method returns valid nodes to move to given a current x and y coord.
   // In this case, the #'s will be returned as pairs in the ArrayList, ie,
   /// .get(0) is the first x coord, .get(1) is the first y coord, .get(2) second x, etc
   public ArrayList<Integer> getValidTiles(int xCoord, int yCoord) {
-    return new ArrayList<Integer>();
+    int leftX = xCoord - 1;
+    int rightX = xCoord + 1;
+    int upY = yCoord - 1;
+    int downY = yCoord + 1;
+    ArrayList<Integer> tempList = new ArrayList<>();
+    // Poll current location
+    if (this.mapArray.get(yCoord).get(xCoord).size() == 0) {
+      tempList.add(xCoord);
+      tempList.add(yCoord);
+    }
+    // Poll left
+    if (this.mapArray.get(yCoord).get(leftX).size() == 0) {
+      tempList.add(leftX);
+      tempList.add(yCoord);
+    }
+    // Poll right
+    if (this.mapArray.get(yCoord).get(rightX).size() == 0) {
+      tempList.add(rightX);
+      tempList.add(yCoord);
+    }
+    // Poll up
+    if (this.mapArray.get(upY).get(xCoord).size() == 0) {
+      tempList.add(xCoord);
+      tempList.add(upY);
+    }
+    // Poll down
+    if (this.mapArray.get(downY).get(xCoord).size() == 0) {
+      tempList.add(xCoord);
+      tempList.add(downY);
+    }
+    return tempList;
+  }
+
+  // This method returns the shortest possible time to get to the destination
+  public int shortestRemainingTime(int currX, int currY) {
+    return (this.destXLoc - currX) + (this.destYLoc - currY);
   }
 }
