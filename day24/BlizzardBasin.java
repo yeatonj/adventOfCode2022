@@ -45,26 +45,36 @@ public class BlizzardBasin {
     System.out.println("Starting with map: ");
     initialBlizzard.printMap();
 
-    // Initialize expedition
+    // Initialize expedition for first trip
     ExpeditionLocation startingPosition = new ExpeditionLocation(0, blizzardList, initialBlizzard.getOriginXLoc(), initialBlizzard.getOriginYLoc());
 
     // Below code is for stack and queue based methods
     ArrayDeque<ExpeditionLocation> checkQueue = new ArrayDeque<>();
     checkQueue.add(startingPosition);
 
-    int elapsedTime = bfs(startingPosition, checkQueue, blizzardList);
+    int elapsedTime = bfs(startingPosition, checkQueue, blizzardList, initialBlizzard.getDestXLoc(), initialBlizzard.getDestYLoc());
 
-    System.out.println("Minimum elapsed time to reach destination is: " + elapsedTime);
-    // blizzardList.get(18).printMap();
+    System.out.println("Minimum elapsed time to reach destination for first time is: " + elapsedTime + " minutes.");
 
+    // Take a trip back
+    ExpeditionLocation startingPosition2 = new ExpeditionLocation(elapsedTime, blizzardList, blizzardList.get(blizzardList.size() - 1).getDestXLoc(), blizzardList.get(blizzardList.size() - 1).getDestYLoc());
+    ArrayDeque<ExpeditionLocation> checkQueue2 = new ArrayDeque<>();
+    checkQueue2.add(startingPosition2);
+    int elapsedTime2 = bfs(startingPosition2, checkQueue2, blizzardList, blizzardList.get(blizzardList.size() - 1).getOriginXLoc(), blizzardList.get(blizzardList.size() - 1).getOriginYLoc());
+    System.out.println("Total time to go back to start is: " + elapsedTime2 + " minutes.");
+
+    // Then head for the destination again
+    ExpeditionLocation startingPosition3 = new ExpeditionLocation(elapsedTime2, blizzardList, blizzardList.get(blizzardList.size() - 1).getOriginXLoc(), blizzardList.get(blizzardList.size() - 1).getOriginYLoc());
+    ArrayDeque<ExpeditionLocation> checkQueue3 = new ArrayDeque<>();
+    checkQueue3.add(startingPosition3);
+    int elapsedTime3 = bfs(startingPosition3, checkQueue3, blizzardList, blizzardList.get(blizzardList.size() - 1).getDestXLoc(), blizzardList.get(blizzardList.size() - 1).getDestYLoc());
+    System.out.println("Total time to go back to destination again is: " + elapsedTime3 + " minutes.");
 
   }
 
   // BFS function
-  public static int bfs(ExpeditionLocation startingPosition, ArrayDeque<ExpeditionLocation> checkQueue, ArrayList<BlizzardMap> blizzardList) {
+  public static int bfs(ExpeditionLocation startingPosition, ArrayDeque<ExpeditionLocation> checkQueue, ArrayList<BlizzardMap> blizzardList, int destinationX, int destinationY) {
     BlizzardMap initialBlizzard = blizzardList.get(0);
-    int destinationX = initialBlizzard.getDestXLoc();
-    int destinationY = initialBlizzard.getDestYLoc();
     int currentX = initialBlizzard.getOriginXLoc();
     int currentY = initialBlizzard.getOriginYLoc();
     int minTime = -1;
