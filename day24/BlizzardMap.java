@@ -173,21 +173,6 @@ public class BlizzardMap {
     int upY = yCoord - 1;
     int downY = yCoord + 1;
     ArrayList<Integer> tempList = new ArrayList<>();
-    // Poll down
-    if ((yCoord < this.mapArray.size() - 1) && this.mapArray.get(downY).get(xCoord).size() == 0) {
-      tempList.add(xCoord);
-      tempList.add(downY);
-    }
-    // Poll right
-    if (this.mapArray.get(yCoord).get(rightX).size() == 0) {
-      tempList.add(rightX);
-      tempList.add(yCoord);
-    }
-    // Poll current location
-    if (this.mapArray.get(yCoord).get(xCoord).size() == 0) {
-      tempList.add(xCoord);
-      tempList.add(yCoord);
-    }
     // Poll left
     if (this.mapArray.get(yCoord).get(leftX).size() == 0) {
       tempList.add(leftX);
@@ -197,6 +182,21 @@ public class BlizzardMap {
     if (yCoord > 0 && this.mapArray.get(upY).get(xCoord).size() == 0) {
       tempList.add(xCoord);
       tempList.add(upY);
+    }
+    // Poll current location
+    if (this.mapArray.get(yCoord).get(xCoord).size() == 0) {
+      tempList.add(xCoord);
+      tempList.add(yCoord);
+    }
+    // Poll down
+    if ((yCoord < this.mapArray.size() - 1) && this.mapArray.get(downY).get(xCoord).size() == 0) {
+      tempList.add(xCoord);
+      tempList.add(downY);
+    }
+    // Poll right
+    if (this.mapArray.get(yCoord).get(rightX).size() == 0) {
+      tempList.add(rightX);
+      tempList.add(yCoord);
     }
     return tempList;
   }
