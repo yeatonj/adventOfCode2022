@@ -31,6 +31,10 @@ public class ExpeditionLocation implements Comparable<ExpeditionLocation>{
     return this.shortestPossTime;
   }
 
+  public int getCurrentTime() {
+    return this.currentTime;
+  }
+
   public int getXLoc() {
     return this.xLoc;
   }
