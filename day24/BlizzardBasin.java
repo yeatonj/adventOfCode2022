@@ -16,18 +16,6 @@ import java.util.ArrayDeque;
 
 public class BlizzardBasin {
   public static void main(String[] args) throws FileNotFoundException {
-    // General approach:
-    // 1. Read the storm into memory, and create a t = 0 representation of it
-    // 2. Generate the storm state at next timeslot and save it to refer back to
-    // it.
-    // 3. Check the party's current position and look for adjacent open slots
-    // at the next timeslot.
-    // 4. Add those positions to a queue, including the current time
-    // 5. Poll the queue and repeat
-    // 6. Optimize to allow for calculation of shortest path (empty board?) and
-    // use that to eliminate paths that won't allow us to reach the end
-    // 7. Memoize based on current position and time?
-
     String filePath = "/Users/yeato/Documents/git_projects/adventOfCode2022/day24/data.txt";
     // String filePath = "/Users/yeato/Documents/git_projects/adventOfCode2022/day24/data_test.txt";
     File dataFile = new File(filePath);
