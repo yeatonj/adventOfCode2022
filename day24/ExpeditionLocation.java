@@ -2,7 +2,7 @@
 
 import java.util.ArrayList;
 
-public class ExpeditionLocation implements Comparable<ExpeditionLocation>{
+public class ExpeditionLocation implements Comparable<ExpeditionLocation> {
   // instance variables
   private int currentTime;
   private BlizzardMap blizzardState;
@@ -56,6 +56,35 @@ public class ExpeditionLocation implements Comparable<ExpeditionLocation>{
       tempList.add(new ExpeditionLocation(this.currentTime + 1, allBlizzards, possNextLocs.get(i), possNextLocs.get(i+1)));
     }
     return tempList;
+  }
+
+  // Hash function
+
+  public int hashCode() {
+    int prime1 = 109;
+    int prime2 = 821;
+    return (this.currentTime * prime1 + this.xLoc)*prime2 + this.yLoc;
+  }
+
+  public String toString() {
+    String returnString = "Expedition at t = " + this.currentTime + ", (" + this.xLoc + ", " + this.yLoc + ")";
+    return returnString;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (o == this) {
+      return true;
+    }
+    if (!(o instanceof ExpeditionLocation)) {
+      return false;
+    }
+    ExpeditionLocation otherExp = (ExpeditionLocation)o;
+    boolean timeEqual = this.currentTime == otherExp.getCurrentTime();
+    boolean xEqual = this.xLoc == otherExp.getXLoc();
+    boolean yEqual = this.yLoc == otherExp.getYLoc();
+
+    return (timeEqual && xEqual && yEqual);
   }
 
 }

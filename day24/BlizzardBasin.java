@@ -9,6 +9,9 @@ import java.util.Scanner;
 import java.util.ArrayList;
 import java.util.PriorityQueue;
 import java.util.Stack;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.ArrayDeque;
 
 
 public class BlizzardBasin {
@@ -25,8 +28,8 @@ public class BlizzardBasin {
     // use that to eliminate paths that won't allow us to reach the end
     // 7. Memoize based on current position and time?
 
-    // String filePath = "/Users/yeato/Documents/git_projects/adventOfCode2022/day24/data.txt";
-    String filePath = "/Users/yeato/Documents/git_projects/adventOfCode2022/day24/data_test.txt";
+    String filePath = "/Users/yeato/Documents/git_projects/adventOfCode2022/day24/data.txt";
+    // String filePath = "/Users/yeato/Documents/git_projects/adventOfCode2022/day24/data_test.txt";
     File dataFile = new File(filePath);
     Scanner fileScanner = new Scanner(dataFile);
 
@@ -46,13 +49,10 @@ public class BlizzardBasin {
     ExpeditionLocation startingPosition = new ExpeditionLocation(0, blizzardList, initialBlizzard.getOriginXLoc(), initialBlizzard.getOriginYLoc());
 
     // Below code is for stack and queue based methods
-    // PriorityQueue<ExpeditionLocation> checkQueue = new PriorityQueue<>();
-    Stack<ExpeditionLocation> checkStack = new Stack<>();
-    // checkQueue.add(startingPosition);
-    checkStack.push(startingPosition);
+    ArrayDeque<ExpeditionLocation> checkQueue = new ArrayDeque<>();
+    checkQueue.add(startingPosition);
 
-    // int elapsedTime = aStarSearch(startingPosition, checkQueue, blizzardList);
-    int elapsedTime = dfsStack(startingPosition, checkStack, blizzardList);
+    int elapsedTime = bfs(startingPosition, checkQueue, blizzardList);
 
     System.out.println("Minimum elapsed time to reach destination is: " + elapsedTime);
     // blizzardList.get(18).printMap();
@@ -60,102 +60,38 @@ public class BlizzardBasin {
 
   }
 
-  // A* search, however the function to govern remaining path length is
-  // dramatically undershooting actual estimated remaining path length
-  public static int aStarSearch(ExpeditionLocation startingPosition, PriorityQueue<ExpeditionLocation> checkQueue, ArrayList<BlizzardMap> blizzardList) {
-    BlizzardMap initialBlizzard = blizzardList.get(0);
-    int destinationX = initialBlizzard.getDestXLoc();
-    int destinationY = initialBlizzard.getDestYLoc();
-    int currentX = initialBlizzard.getOriginXLoc();
-    int currentY = initialBlizzard.getOriginYLoc();
-    int elapsedTime = 0;
-
-    // Perform the search
-    while(!(currentX == destinationX && currentY == destinationY) && !checkQueue.isEmpty()) {
-      // poll the queue
-      ExpeditionLocation tempLoc = checkQueue.poll();
-      elapsedTime = tempLoc.getCurrentTime();
-      currentX = tempLoc.getXLoc();
-      currentY = tempLoc.getYLoc();
-      // System.out.println("Current Location: (" + currentX + ", " + currentY + ")");
-      ArrayList<ExpeditionLocation> newExpeditionLocs = tempLoc.getNextLocs(blizzardList);
-      for (ExpeditionLocation exp : newExpeditionLocs) {
-        checkQueue.add(exp);
-      }
-    }
-    return elapsedTime;
-  }
-
-  // Method for doing a dfs on the expedition
-  public static int dfsStack(ExpeditionLocation startingPosition, Stack<ExpeditionLocation> checkStack, ArrayList<BlizzardMap> blizzardList) {
+  // BFS function
+  public static int bfs(ExpeditionLocation startingPosition, ArrayDeque<ExpeditionLocation> checkQueue, ArrayList<BlizzardMap> blizzardList) {
     BlizzardMap initialBlizzard = blizzardList.get(0);
     int destinationX = initialBlizzard.getDestXLoc();
     int destinationY = initialBlizzard.getDestYLoc();
     int currentX = initialBlizzard.getOriginXLoc();
     int currentY = initialBlizzard.getOriginYLoc();
     int minTime = -1;
+    HashSet<ExpeditionLocation> visitedLocs = new HashSet<>();
+    visitedLocs.add(startingPosition);
 
     // Perform the search
-    while(!checkStack.isEmpty()) {
-      // CHECK MEMOIZATION HERE
-
+    while(!checkQueue.isEmpty()) {
       // poll the queue
-      ExpeditionLocation tempLoc = checkStack.pop();
+      ExpeditionLocation tempLoc = checkQueue.poll();
+      visitedLocs.add(tempLoc);
+      int elapsedTime = tempLoc.getCurrentTime();
       currentX = tempLoc.getXLoc();
       currentY = tempLoc.getYLoc();
       if (currentX == destinationX && currentY == destinationY) {
-        if (minTime == -1) {
-          minTime = tempLoc.getCurrentTime();
-        } else if (tempLoc.getCurrentTime() < minTime) {
-          minTime = tempLoc.getCurrentTime();
-        }
-        // Memoize the solution HERE
+        return elapsedTime;
       }
+      // System.out.println("Current Location: (" + currentX + ", " + currentY + ")");
       ArrayList<ExpeditionLocation> newExpeditionLocs = tempLoc.getNextLocs(blizzardList);
       for (ExpeditionLocation exp : newExpeditionLocs) {
-        // Include a condition to exit the loop (ie, we can't possibly find a
-        // shorter path)
-        if (minTime == -1 || exp.getShortestPossTime() <= minTime) {
-          checkStack.push(exp);
+        if (!visitedLocs.contains(exp)) {
+          visitedLocs.add(exp);
+          checkQueue.add(exp);
         }
       }
     }
-    return minTime;
-  }
-
-  // Recursive DFS with memoization
-  public static int recursiveDFS(ExpeditionLocation currentPosition,
-  ArrayList<BlizzardMap> blizzardList,
-  ArrayList<Integer> currentMinTime,
-  int destinationX,
-  int destinationY) {
-    // Start function
-    BlizzardMap initialBlizzard = blizzardList.get(0);
-    int currentX = currentPosition.getXLoc();
-    int currentY = currentPosition.getYLoc();
-    System.out.println(currentX + ", " + currentY);
-    // Base case
-    if (currentX == destinationX && currentY == destinationY) {
-      currentMinTime.add(currentPosition.getCurrentTime());
-      return currentPosition.getCurrentTime();
-    }
-
-    // Now, ensure we're not checking solutions that can't meet the current min
-    int currentGlobalMin = currentMinTime.get(currentMinTime.size() - 1);
-    if (currentGlobalMin != -1 && currentPosition.getShortestPossTime() > currentGlobalMin) {
-      // Not correct, but breaks the loop
-      return (currentPosition.getShortestPossTime());
-    }
-
-    // Finally, check each adjacent position
-    ArrayList<ExpeditionLocation> newExpeditionLocs = currentPosition.getNextLocs(blizzardList);
-    int minTime = -1;
-    for (ExpeditionLocation exp : newExpeditionLocs) {
-      int newTime = recursiveDFS(exp, blizzardList, currentMinTime, destinationX, destinationY);
-      if (minTime == -1 || newTime < minTime) {
-        minTime = newTime;
-      }
-    }
+    System.out.println(visitedLocs);
     return minTime;
   }
 }
